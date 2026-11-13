@@ -15,7 +15,7 @@
 
 O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.com/SECHAK-AG/capptivo), criado para gravar a tela e editar vídeos de demonstração, aulas, tutoriais, apresentações e documentação de programas. Inclui zoom inteligente que acompanha o cursor, sugestões de zoom baseadas nos cliques, anotações na tela, personalização visual, webcam e legendas locais com Whisper.
 
-> **Estado do projeto:** a documentação e a identidade visual do fork foram personalizadas. O código do aplicativo continua baseado no Capptivo 1.0.4; a mudança do README e do logotipo **não significa** que a interface, o nome exibido no executável ou os ícones dos instaladores já foram substituídos. Consulte os workflows para verificar se cada compilação passou.
+> **Estado do projeto:** a identidade do instalador Windows foi configurada como **WMK Screen Studio** (`productName`, identificador `com.wmk.screenstudio`, ícones PNG/ICO derivados do tema WMK). Os componentes internos de código ainda preservam nomes técnicos Capptivo para evitar regressões na primeira compilação. O aplicativo continua baseado no Capptivo 1.0.4; **o instalador e a interface ainda precisam ser compilados e testados no Windows**. O atualizador automático do projeto original foi desativado na inicialização e o endereço foi isolado para o fork, sem atualização assinada WMK disponível.
 
 **Navegação:** [Instalação](#instalação) · [Compilação automática](#compilação-automática-no-github-actions) · [Requisitos](#requisitos-e-sistemas-compatíveis) · [Recursos](#recursos) · [Desenvolvimento](#desenvolvimento-local) · [Arquitetura](#arquitetura) · [Diagnósticos](#diagnósticos-locais) · [Licença e créditos](#licença-e-créditos)
 
@@ -222,6 +222,15 @@ A barra flutuante permite selecionar elementos sem impedir o uso normal da área
 - Biblioteca de gravações e renomeação de projetos.
 - Não exige conta para gravar ou editar.
 - Registro de dados do cursor separado do vídeo.
+
+### Identidade WMK para instaladores de testes
+
+- Nome do produto e identificador: `src-tauri/tauri.conf.json`.
+- Ícones do Windows: `src-tauri/icons/icon.ico`, `32x32.png`, `128x128.png` e `128x128@2x.png` (cores e símbolo do tema WMK).
+- Ícone macOS `.icns`: ainda não atualizado nesta rodada; não considerar o pacote macOS pronto para publicação.
+- Autor original preservado no Cargo, com crédito adicional a **Walney Moreira Klein — walneyk@hotmail.com**.
+- O executável gerado pelo workflow é **experimental e sem assinatura de código**. As alterações de identidade não demonstram a conclusão da compilação.
+- As atualizações assinadas do WMK precisam de chave e manifesto próprios antes de ser reativadas. Nunca confiar em um arquivo de atualização do fork original para instalar esta versão.
 
 ## Desenvolvimento local
 
