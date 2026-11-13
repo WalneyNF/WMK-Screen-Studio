@@ -24,6 +24,9 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[Legendas com IA e assistente ao vivo — manual](manual-legendas-assistente-live.html)** — importar/exportar SRT/VTT, verificar legibilidade, aplicar presets, preparar análise com IA e selecionar perguntas de espectadores para consultas privadas. Os conectores de IA e o chat em tempo real continuam pendentes de implementação e teste.
+
+
 - **[WMK Video Doctor (Python)](tools/wmk_video_doctor.py)** — diagnóstico experimental de arquivos exportados com FFprobe/FFmpeg: faixas de vídeo/áudio, duração e trechos escuros. Ainda não integrado ao Tauri e não substitui testes reais de captura.
 
 
