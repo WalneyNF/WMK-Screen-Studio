@@ -11,11 +11,11 @@ button,.button{display:inline-block;border:1px solid #7654b9;background:#6533a8;
 button:disabled{cursor:not-allowed;opacity:.5}.secondary{background:#27304a;border-color:#535a7a}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 170px}.hint{background:#252c4b;padding:12px;border-left:3px solid var(--cyan);border-radius:8px}.status{min-height:30px;color:#a9f1df}
 .frame{width:100%;height:clamp(430px,73vh,820px);background:#080c17;border-radius:12px;overflow:hidden}#meet{width:100%;height:100%}#meet iframe{height:100%!important;width:100%!important}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tag{font-size:12px;border:1px solid #7654b9;border-radius:999px;padding:3px 10px;color:#cbb6ff}
-footer{color:var(--muted);font-size:12px;padding:18px}
+footer{color:var(--muted);font-size:12px;padding:18px}.wmk-tools{display:flex;gap:9px;flex-wrap:wrap}.wmk-tools>*{flex:1 1 150px}.wmk-side{border:1px solid var(--line);background:#232b47;border-radius:12px;padding:14px;margin:12px 0}
 @media(max-width:650px){main{padding:8px}header,section{padding:14px}.grid{grid-template-columns:1fr}.frame{height:75vh}}
 </style></head><body><main>
 <header><div class="row" style="align-items:center;justify-content:space-between"><strong>WMK • MEETING STUDIO</strong><span class="tag">Laboratório de reuniões</span></div>
-<h1>Reuniões e aulas sem complicação</h1><p>Crie uma sala, compartilhe o link e entre pelo navegador do computador ou celular. Use a infraestrutura Jitsi; o WMK organiza a entrada.</p>
+<img src="public/wmk-screen-studio-logo.svg" alt="Logo WMK Screen Studio" style="max-width:460px;width:100%;height:auto;display:block"><h1>Reuniões e aulas sem complicação</h1><p>Crie uma sala, compartilhe o link e entre pelo navegador do computador ou celular. Use a infraestrutura Jitsi; o WMK organiza a entrada.</p>
 <p><a href="manual-jitsi-integracao-desenvolvedores.html">Manual para desenvolvedores</a> · <a href="guia-jitsi-e-ferramentas-gratuitas.html">O que é Jitsi?</a></p></header>
 <section><h2>1. Configurar sala</h2>
 <div class="grid"><div><label for="server">Servidor Jitsi</label><input id="server" value="https://meet.jit.si" autocomplete="off" spellcheck="false"><small>Para testes, use o público; para uso contínuo em sua aplicação, configure um servidor próprio ou serviço contratado.</small></div>
@@ -28,6 +28,30 @@ footer{color:var(--muted);font-size:12px;padding:18px}
 <section><h2>2. Reunião integrada (opcional)</h2><p>Para quem deseja manter a chamada dentro desta página, o Jitsi oferece uma API de incorporação. Em alguns celulares e instalações, abrir em nova aba ou usar o aplicativo oficial pode ser mais compatível.</p>
 <div class="row"><button id="embed" type="button" class="secondary">Iniciar reunião nesta página</button><button id="stop" type="button" class="secondary" disabled>Encerrar visualização</button></div>
 <div id="embedMsg" class="status" role="status" aria-live="polite"></div>
+<div class="wmk-side">
+  <h2>Painel WMK — identidade da reunião</h2>
+  <label for="wmk-name">Seu nome na sala</label>
+  <input id="wmk-name" maxlength="80" placeholder="Ex.: Professor, Engenheiro, Aluno">
+  <p>O logotipo e as ferramentas desta página são WMK. A interface interna do servidor Jitsi pode conservar sua marca.</p>
+</div>
+<div id="wmk-controls" class="wmk-side" hidden>
+  <h2>Ferramentas de reunião WMK</h2>
+  <div class="wmk-tools">
+    <button id="wmk-chat" type="button" class="secondary">Abrir chat</button>
+    <button id="wmk-hand" type="button" class="secondary">Levantar mão</button>
+    <button id="wmk-tiles" type="button" class="secondary">Ver participantes</button>
+    <button id="wmk-ai" type="button">Chat com IA</button>
+    <button id="wmk-tasks" type="button">Atividades</button>
+  </div>
+  <div id="wmk-side-panel" class="wmk-side" hidden>
+    <h2 id="wmk-side-title">WMK Assistente</h2>
+    <p id="wmk-side-description">O usuário controla quais dados compartilha.</p>
+    <label for="wmk-question">Pergunta, anotação ou atividade</label>
+    <textarea id="wmk-question" rows="5" placeholder="Escreva aqui..."></textarea>
+    <div class="wmk-tools"><button id="wmk-copy" type="button">Copiar para minha IA</button><button id="wmk-close" type="button" class="secondary">Fechar</button></div>
+    <p id="wmk-copy-status" role="status"></p>
+  </div>
+</div>
 <div id="frame" class="frame" hidden><div id="meet"></div></div>
 <p class="hint"><strong>Privacidade:</strong> esta página não grava reunião, não salva chat e não recebe senhas. Seu áudio/vídeo é processado pelo servidor Jitsi escolhido. O botão “Encerrar visualização” fecha apenas esta conexão local, não expulsa outras pessoas.</p>
 </section>
@@ -38,6 +62,26 @@ footer{color:var(--muted);font-size:12px;padding:18px}
 (()=>{"use strict";
 const $=id=>document.getElementById(id);
 let api=null,activeUrl="";
+function openWmkTool(kind) {
+ $("wmk-side-panel").hidden=false;
+ $("wmk-side-title").textContent=kind==="ai"?"WMK — Chat com IA":"WMK — Atividades";
+ $("wmk-side-description").textContent=kind==="ai"
+  ?"Escreva uma pergunta e copie para o provedor de IA que você escolher. Ainda não há respostas automáticas ou conta compartilhada."
+  :"Prepare exercícios e copie para seus alunos. A sincronização das atividades ainda será desenvolvida.";
+ $("wmk-question").focus();
+}
+$("wmk-ai").onclick=()=>openWmkTool("ai");
+$("wmk-tasks").onclick=()=>openWmkTool("tasks");
+$("wmk-close").onclick=()=>{$("wmk-side-panel").hidden=true};
+$("wmk-copy").onclick=async()=>{
+ const field=$("wmk-question");
+ try{await navigator.clipboard.writeText(field.value);$("wmk-copy-status").textContent="Copiado. Nada foi enviado automaticamente."}
+ catch{field.select();$("wmk-copy-status").textContent="Selecione e copie manualmente."}
+};
+const safeCmd=(command)=>{try{if(api)api.executeCommand(command)}catch(e){$("embedMsg").textContent="Comando indisponível nesta sala."}};
+$("wmk-chat").onclick=()=>safeCmd("toggleChat");
+$("wmk-hand").onclick=()=>safeCmd("toggleRaiseHand");
+$("wmk-tiles").onclick=()=>safeCmd("toggleTileView");
 function safeServer(raw){const u=new URL(raw.trim());if(u.protocol!=="https:"||u.username||u.password||u.search||u.hash||u.pathname!=="/")throw Error("Informe somente o domínio HTTPS (ex.: https://meet.jit.si).");if(!/^[a-z0-9.-]+$/i.test(u.hostname))throw Error("Servidor inválido.");if(u.hostname==="localhost"||u.hostname.endsWith(".local"))throw Error("Use um domínio HTTPS público válido para acesso por celular.");return u.origin;}
 function safeRoom(raw){const room=raw.trim();if(!/^[A-Za-z0-9_-]{8,100}$/.test(room))throw Error("A sala deve ter entre 8 e 100 letras, números, _ ou -.");return room;}
 function makeName(){const bytes=new Uint8Array(14);if(!crypto?.getRandomValues)throw Error("Navegador sem geração criptográfica de nomes.");crypto.getRandomValues(bytes);return "wmk-"+Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");}
@@ -56,11 +100,21 @@ $("embed").onclick=async()=>{
    const s=document.createElement("script");s.src=target.base+"/external_api.js";s.onload=resolve;s.onerror=()=>reject(Error("Não foi possível carregar a API de integração deste servidor."));document.head.appendChild(s);
  });
  try{await loaded;if(!window.JitsiMeetExternalAPI)throw Error("API Jitsi indisponível.");
-   api=new window.JitsiMeetExternalAPI(domain,{roomName:target.room,parentNode:$("meet"),width:"100%",height:"100%",lang:"ptBR"});
+   api=new window.JitsiMeetExternalAPI(domain,{
+     roomName:target.room,parentNode:$("meet"),width:"100%",height:"100%",lang:"ptBR",
+     userInfo:{displayName:$("wmk-name").value.trim().slice(0,80)||"Participante WMK"}
+   });
+   $("wmk-controls").hidden=false;
+   if(typeof api.addEventListener==="function"){
+     api.addEventListener("toolbarButtonClicked",event=>{
+       if(event && event.key==="wmk-ai")openWmkTool("ai");
+       if(event && event.key==="wmk-tasks")openWmkTool("tasks");
+     });
+   }
    $("frame").hidden=false;$("stop").disabled=false;$("embedMsg").textContent="A reunião será gerenciada pelo servidor escolhido. Autorize microfone/câmera se desejar.";
  }catch(e){$("embedMsg").textContent=e.message+" Você pode abrir o link em uma nova aba.";$("frame").hidden=true}
 };
-$("stop").onclick=()=>{if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
+$("stop").onclick=()=>{if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
 $("generate").click();
 })();
 </script></body></html>
