@@ -24,6 +24,10 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[Contrato OpenAPI da Audience API](docs-api/audience-openapi.json)** — especificação REST versionada para integrar dashboards, reuniões e aplicações externas.
+- **Painel nativo experimental:** a biblioteca do editor Tauri agora possui a entrada **Análise de audiência**, com importação CSV/JSON e abas para perguntas, assuntos e ideias. A integração ainda precisa ser compilada e testada no Windows.
+
+
 - **[Manual da API Audience (HTML)](manual-audience-api.html)** — importar lives, consultar informações por API local com chave e gerar relatórios com gráficos para reuniões.
 - **[Código da API Audience (Python)](tools/audience_api.py)** — módulo independente, gratuito, baseado em SQLite e biblioteca padrão.
 
