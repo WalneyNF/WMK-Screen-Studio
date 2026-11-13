@@ -55,6 +55,7 @@
     "allow-complete-export",
     "allow-discard-export-destination",
     "allow-present-window",
+    "allow-open-recorder",
     "allow-open-editor",
     "allow-reveal-error-log",
     "allow-reveal-logs-dir",
