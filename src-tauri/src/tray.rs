@@ -15,7 +15,7 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
 use tauri::{AppHandle, Manager};
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 
-pub const TRAY_ID: &str = "capptivo-tray";
+pub const TRAY_ID: &str = "wmk-screen-studio-tray";
 
 /// Flat mark for NSStatusItem — black + alpha only (`icon_as_template`).
 #[cfg(target_os = "macos")]
@@ -81,40 +81,37 @@ fn tray_kind(state: &RecorderState) -> TrayKind {
 }
 
 fn idle_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
-    // "Open Recorder" first: on most Linux DEs (appindicator) tray left-click
+    // "Abrir gravador" first: on most Linux DEs (appindicator) tray left-click
     // never fires, so the popover must be reachable from the menu. It's also a
     // discoverable fallback on Windows for users who expect click = menu.
+    let open_main = MenuItem::with_id(
+        app, "open_main", "Abrir WMK Screen Studio", true, None::<&str>,
+    )?;
     let open_recorder =
-        MenuItem::with_id(app, "open_recorder", "Open Recorder", true, None::<&str>)?;
-    let annotate = MenuItem::with_id(app, "annotate", "Annotate Screen…", true, None::<&str>)?;
-    let open_library = MenuItem::with_id(app, "open_library", "Recordings…", true, None::<&str>)?;
-    let settings = MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?;
+        MenuItem::with_id(app, "open_recorder", "Abrir gravador", true, None::<&str>)?;
+    let annotate = MenuItem::with_id(app, "annotate", "Anotar tela…", true, None::<&str>)?;
+    let open_library = MenuItem::with_id(app, "open_library", "Biblioteca de gravações…", true, None::<&str>)?;
+    let settings = MenuItem::with_id(app, "settings", "Configurações do gravador…", true, None::<&str>)?;
     let open_diagnostics = MenuItem::with_id(
         app,
         "open_diagnostics",
-        "Open Diagnostics…",
+        "Abrir diagnósticos…",
         true,
         None::<&str>,
     )?;
     let clear_diagnostics = MenuItem::with_id(
         app,
         "clear_diagnostics",
-        "Clear Diagnostics",
-        true,
-        None::<&str>,
-    )?;
-    let check_updates = MenuItem::with_id(
-        app,
-        "check_updates",
-        "Check for Updates…",
+        "Limpar diagnósticos",
         true,
         None::<&str>,
     )?;
     let separator = PredefinedMenuItem::separator(app)?;
-    let quit = MenuItem::with_id(app, "quit", "Quit Capptivo", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Sair do WMK Screen Studio", true, None::<&str>)?;
     Menu::with_items(
         app,
         &[
+            &open_main,
             &open_recorder,
             &annotate,
             &open_library,
@@ -122,7 +119,6 @@ fn idle_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
             &separator,
             &open_diagnostics,
             &clear_diagnostics,
-            &check_updates,
             &separator,
             &quit,
         ],
@@ -132,16 +128,16 @@ fn idle_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
 /// In-session menu: pause/resume + stop first, then annotate / HUD / library.
 fn live_menu(app: &AppHandle, paused: bool) -> tauri::Result<Menu<tauri::Wry>> {
     let pause_or_resume = if paused {
-        MenuItem::with_id(app, "resume", "Resume", true, None::<&str>)?
+        MenuItem::with_id(app, "resume", "Retomar gravação", true, None::<&str>)?
     } else {
-        MenuItem::with_id(app, "pause", "Pause", true, None::<&str>)?
+        MenuItem::with_id(app, "pause", "Pausar gravação", true, None::<&str>)?
     };
-    let stop = MenuItem::with_id(app, "stop", "Stop", true, None::<&str>)?;
+    let stop = MenuItem::with_id(app, "stop", "Parar gravação", true, None::<&str>)?;
     let sep1 = PredefinedMenuItem::separator(app)?;
-    let annotate = MenuItem::with_id(app, "annotate", "Open Annotation", true, None::<&str>)?;
+    let annotate = MenuItem::with_id(app, "annotate", "Abrir anotações", true, None::<&str>)?;
     let open_recorder =
-        MenuItem::with_id(app, "open_recorder", "Show Recorder", true, None::<&str>)?;
-    let open_library = MenuItem::with_id(app, "open_library", "Recordings…", true, None::<&str>)?;
+        MenuItem::with_id(app, "open_recorder", "Mostrar gravador", true, None::<&str>)?;
+    let open_library = MenuItem::with_id(app, "open_library", "Biblioteca de gravações…", true, None::<&str>)?;
     let sep2 = PredefinedMenuItem::separator(app)?;
     // Quit while recording would leave a half-written project on disk — stop first.
     Menu::with_items(
@@ -159,9 +155,9 @@ fn live_menu(app: &AppHandle, paused: bool) -> tauri::Result<Menu<tauri::Wry>> {
 }
 
 fn finalizing_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
-    let status = MenuItem::with_id(app, "finalizing", "Finalizing…", false, None::<&str>)?;
+    let status = MenuItem::with_id(app, "finalizing", "Finalizando gravação…", false, None::<&str>)?;
     let separator = PredefinedMenuItem::separator(app)?;
-    let open_library = MenuItem::with_id(app, "open_library", "Recordings…", true, None::<&str>)?;
+    let open_library = MenuItem::with_id(app, "open_library", "Biblioteca de gravações…", true, None::<&str>)?;
     // No Quit while a take is being finalized — same data-loss risk as mid-record quit.
     Menu::with_items(app, &[&status, &separator, &open_library])
 }
@@ -195,6 +191,11 @@ fn on_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
             }
             app.exit(0);
         }
+        "open_main" => {
+            if let Err(e) = windows::open_library(app.clone()) {
+                tracing::warn!(%e, "failed to open WMK main window");
+            }
+        }
         "open_recorder" => {
             if let Err(e) = windows::show_recorder_popover(app) {
                 tracing::warn!(%e, "failed to open recorder popover from menu");
@@ -213,7 +214,7 @@ fn on_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
         "open_diagnostics" => {
             if crate::error_log::reveal().is_err() {
                 app.dialog()
-                    .message("Could not open local diagnostics")
+                    .message("Não foi possível abrir os diagnósticos locais")
                     .kind(MessageDialogKind::Error)
                     .show(|_| {});
             }
@@ -221,7 +222,7 @@ fn on_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
         "clear_diagnostics" => {
             if crate::error_log::clear().is_err() {
                 app.dialog()
-                    .message("Could not clear local diagnostics")
+                    .message("Não foi possível limpar os diagnósticos locais")
                     .kind(MessageDialogKind::Error)
                     .show(|_| {});
             }
@@ -229,9 +230,6 @@ fn on_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
         "settings" => {
             // Settings window is a Phase 5 item; open the popover for now.
             let _ = windows::show_recorder_popover(app);
-        }
-        "check_updates" => {
-            crate::updater::spawn_check(app.clone(), crate::updater::Prompt::Interactive);
         }
         "pause" => {
             if let Some(state) = app.try_state::<AppState>() {
@@ -276,8 +274,10 @@ fn on_tray_icon_event(tray: &tauri::tray::TrayIcon, event: TrayIconEvent) {
         ..
     } = event
     {
-        if let Err(e) = windows::toggle_recorder_popover(tray.app_handle()) {
-            tracing::warn!(%e, "failed to toggle recorder popover");
+        // On desktop, tray left-click returns to the main application.
+        // Recorder stays available through Alt+Shift+R and menu.
+        if let Err(e) = windows::open_library(tray.app_handle().clone()) {
+            tracing::warn!(%e, "failed to open WMK main window from tray");
         }
     }
 }
