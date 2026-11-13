@@ -1427,7 +1427,7 @@ fn create_recorder_popover(app: &AppHandle) -> tauri::Result<()> {
     let (x, y) = recorder_bottom_center(app, size.width, size.height);
     let win = crate::webview_gpu::apply_gpu_args(
         WebviewWindowBuilder::new(app, RECORDER_LABEL, WebviewUrl::App("recorder.html".into()))
-            .title("Capptivo")
+            .title("WMK Screen Studio — Gravador")
             .inner_size(size.width, size.height)
             .resizable(false)
             .decorations(false)
@@ -1523,7 +1523,7 @@ fn create_camera_preview_window(app: &AppHandle, device_id: &str) -> tauri::Resu
     let (x, y) = camera_default_position(app);
     let win = crate::webview_gpu::apply_gpu_args(
         WebviewWindowBuilder::new(app, CAMERA_LABEL, WebviewUrl::App(url.into()))
-            .title("Capptivo Camera")
+            .title("WMK Screen Studio — Câmera")
             .inner_size(CAMERA_W, CAMERA_H)
             .resizable(false)
             .decorations(false)
@@ -1793,7 +1793,7 @@ fn show_annotation_overlay_inner(app: &AppHandle) -> tauri::Result<()> {
             ANNOTATION_LABEL,
             WebviewUrl::App("annotation.html".into()),
         )
-        .title("Capptivo Annotation")
+        .title("WMK Screen Studio — Anotação")
         .resizable(false)
         .decorations(false)
         .transparent(true)
@@ -2073,6 +2073,8 @@ fn editor_window_builder<'a>(
         .inner_size(EDITOR_W, EDITOR_H)
         .min_inner_size(900.0, 600.0)
         .resizable(true)
+        // The main library/editor must be visible in the Windows taskbar.
+        .skip_taskbar(false)
         .position(x, y);
 
     #[cfg(target_os = "macos")]
@@ -2173,7 +2175,7 @@ pub fn open_library(app: AppHandle) -> tauri::Result<()> {
         &app,
         LIBRARY_LABEL,
         "editor.html?view=library",
-        "Capptivo Library",
+        "WMK Screen Studio — Biblioteca",
     )
 }
 
@@ -2191,7 +2193,7 @@ pub fn open_editor(app: AppHandle, project_id: String) -> tauri::Result<()> {
 pub fn open_editor_window(app: &AppHandle, project_id: &str) -> tauri::Result<()> {
     let label = format!("{EDITOR_LABEL_PREFIX}{project_id}");
     let url = format!("editor.html?project={project_id}");
-    ensure_editor_window(app, &label, &url, "Capptivo Editor")
+    ensure_editor_window(app, &label, &url, "WMK Screen Studio — Editor")
 }
 
 /// Close the editor for a project if it is open (e.g. after delete).
