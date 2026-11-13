@@ -1,8 +1,8 @@
 [package]
 name = "desktop"
 version = "1.0.4"
-description = "Capptivo Desktop — native screen recorder + editor"
-authors = ["idboussadel"]
+description = "WMK Screen Studio — gravador de tela e editor de vídeos"
+authors = ["idboussadel", "Walney Moreira Klein <walneyk@hotmail.com>"]
 license = "MIT"
 edition = "2021"
 # `tauri dev` runs plain `cargo run`; the workspace also builds the engine's
