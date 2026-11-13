@@ -415,6 +415,8 @@ export interface EditorStore {
   setCaptionSettings: (patch: Partial<CaptionSettings>) => void;
   generateCaptions: () => Promise<void>;
   clearCaptions: () => void;
+  /** Replace project captions from validated SRT/VTT import. */
+  importCaptions: (captions: CaptionCue[]) => void;
   /** Fix Whisper typos; timings kept when token count still matches. */
   updateCaptionText: (cueId: string, text: string) => void;
   /** Batch edits from the caption sheet — one persist. */
@@ -1233,6 +1235,11 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         captionError: describeError(e),
       });
     }
+  },
+
+  importCaptions(captions) {
+    set({ captions, captionSettings: { ...get().captionSettings, enabled: captions.length > 0 }, captionError: null });
+    schedulePersist(get);
   },
 
   clearCaptions() {
