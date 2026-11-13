@@ -33,7 +33,7 @@ function WindowControls() {
     <div className="ml-2 flex items-center">
       <button
         type="button"
-        aria-label="Minimize"
+        aria-label="Minimizar"
         className={buttonClass}
         onClick={() => void win.minimize().catch(() => undefined)}
       >
@@ -41,7 +41,7 @@ function WindowControls() {
       </button>
       <button
         type="button"
-        aria-label="Maximize"
+        aria-label="Maximizar"
         className={buttonClass}
         onClick={() => void win.toggleMaximize().catch(() => undefined)}
       >
@@ -49,7 +49,7 @@ function WindowControls() {
       </button>
       <button
         type="button"
-        aria-label="Close"
+        aria-label="Fechar"
         className={cn(
           buttonClass,
           "hover:bg-red-500/90 hover:text-white dark:hover:bg-red-600/90",
