@@ -1,0 +1,37 @@
+name: WMK - Compilar Windows
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 90
+    env:
+      RUSTUP_TOOLCHAIN: 1.98.0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: dtolnay/rust-toolchain@f8be11a05b1d4f3fcebe6410cc16743212b999b0 # Rust 1.98.0
+        with:
+          targets: x86_64-pc-windows-msvc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm test
+      - run: corepack pnpm fetch:ffmpeg --target x86_64-pc-windows-msvc
+      - run: corepack pnpm tauri build --target x86_64-pc-windows-msvc --bundles nsis,msi --config .github/tauri.unsigned.conf.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: WMK-Screen-Studio-Windows-x64
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+          if-no-files-found: error
+          retention-days: 14
