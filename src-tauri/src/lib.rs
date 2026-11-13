@@ -145,8 +145,18 @@ pub fn run() {
             // open_library safely schedules WebView2 creation outside the
             // synchronous startup callback on Windows.
             tauri::RunEvent::Ready => {
-                if let Err(e) = windows::open_library(app.clone()) {
-                    tracing::warn!(%e, "failed to open WMK main window on launch");
+                if let Err(e) = windows::open_main_window_on_ready(app) {
+                    tracing::error!(%e, "WMK startup: main window creation failed");
+                    // A hidden tray process is not an acceptable failure mode.
+                    // Surface an actionable native dialog even if WebView2 failed.
+                    use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
+                    app.dialog()
+                        .message(format!(
+                            "Não foi possível abrir a janela principal do WMK Screen Studio.\n\nDetalhe técnico: {e}\n\nConfira a instalação do Microsoft Edge WebView2 Runtime e abra os diagnósticos pela bandeja."
+                        ))
+                        .title("WMK Screen Studio — Erro ao iniciar")
+                        .kind(MessageDialogKind::Error)
+                        .show(|_| {});
                 }
                 // Auto-updates remain disabled until WMK signs its own releases.
             }
