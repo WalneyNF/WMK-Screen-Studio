@@ -52,6 +52,19 @@ footer{color:var(--muted);font-size:12px;padding:18px}.wmk-op{border:1px solid v
     <p id="wmk-copy-status" role="status"></p>
   </div>
 </div>
+<div id="wmk-presenter" class="wmk-side" hidden>
+<h2>WMK — Mesa de apresentação</h2>
+<p>Abra PDF ou imagem no seu computador e use “Compartilhar tela” para mostrar a janela aos participantes. O WMK não envia o arquivo automaticamente; cada participante precisa de acesso autorizado ao documento para recebê-lo.</p>
+<label for="wmk-local-file">Escolher PDF ou imagem do computador</label>
+<input id="wmk-local-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp">
+<div class="wmk-tools"><button id="wmk-present-screen" type="button">Compartilhar minha tela no Jitsi</button><button id="wmk-present-close" type="button" class="secondary">Fechar apresentação</button></div>
+<div id="wmk-local-preview" style="width:100%;height:380px;background:#0e1429;border-radius:10px;overflow:hidden"></div>
+<p class="hint">PowerPoint e Word: abra o arquivo no aplicativo correspondente e compartilhe sua janela. Prévia de PDF depende do visualizador do navegador. Arquivos locais não são publicados nem enviados pelo WMK.</p>
+<label for="wmk-shared-url">Link autorizado de documento para compartilhar</label>
+<input id="wmk-shared-url" placeholder="https://... (OneDrive, Drive, servidor da escola)" maxlength="2048">
+<button id="wmk-copy-doc" type="button" class="secondary">Copiar link do documento</button>
+<p id="wmk-present-status" role="status"></p>
+</div>
 <div id="wmk-operator" hidden></div>
 <div id="frame" class="frame" hidden><div id="meet"></div></div>
 <p class="hint"><strong>Privacidade:</strong> esta página não grava reunião, não salva chat e não recebe senhas. Seu áudio/vídeo é processado pelo servidor Jitsi escolhido. O botão “Encerrar visualização” fecha apenas esta conexão local, não expulsa outras pessoas.</p>
@@ -64,6 +77,38 @@ footer{color:var(--muted);font-size:12px;padding:18px}.wmk-op{border:1px solid v
 (()=>{"use strict";
 const $=id=>document.getElementById(id);
 let api=null,activeUrl="",operator=null;
+let presenterUrl=null;
+function showPresenter(kind){
+ $("wmk-presenter").hidden=false;
+ if(kind==="materials")$("wmk-shared-url").focus();
+ else $("wmk-local-file").focus();
+}
+$("wmk-local-file").onchange=()=>{
+ const file=$("wmk-local-file").files?.[0];
+ if(presenterUrl){URL.revokeObjectURL(presenterUrl);presenterUrl=null}
+ $("wmk-local-preview").replaceChildren();
+ if(!file)return;
+ const allowed=["application/pdf","image/png","image/jpeg","image/webp"];
+ if(!allowed.includes(file.type)||file.size>100*1024*1024){
+   $("wmk-present-status").textContent="Aceitos PDF, JPG, PNG e WebP de até 100 MB para prévia local.";return;
+ }
+ presenterUrl=URL.createObjectURL(file);
+ const viewer=document.createElement(file.type==="application/pdf"?"iframe":"img");
+ viewer.src=presenterUrl;viewer.title="Prévia local do arquivo";
+ viewer.style.width="100%";viewer.style.height="100%";viewer.style.objectFit="contain";
+ $("wmk-local-preview").appendChild(viewer);
+ $("wmk-present-status").textContent="Prévia local pronta. Para apresentar ao grupo, use Compartilhar tela e selecione a janela.";
+};
+$("wmk-present-screen").onclick=()=>safeCmd("toggleShareScreen");
+$("wmk-present-close").onclick=()=>{$("wmk-presenter").hidden=true};
+$("wmk-copy-doc").onclick=async()=>{
+ try{
+  const u=new URL($("wmk-shared-url").value);
+  if(u.protocol!=="https:")throw Error("Use um link HTTPS.");
+  await navigator.clipboard.writeText(u.href);
+  $("wmk-present-status").textContent="Link copiado; compartilhe apenas com pessoas autorizadas.";
+ }catch{$("wmk-present-status").textContent="Informe um link HTTPS acessível aos convidados."}
+};
 function openWmkTool(kind) {
  $("wmk-side-panel").hidden=false;
  $("wmk-side-title").textContent=kind==="ai"?"WMK — Chat com IA":"WMK — Atividades";
@@ -116,12 +161,12 @@ $("embed").onclick=async()=>{
    }
    if(window.WMKMeetingCommands){
      $("wmk-operator").hidden=false;
-     operator=window.WMKMeetingCommands.mount(api,$("wmk-operator"),{openTool:openWmkTool});
+     operator=window.WMKMeetingCommands.mount(api,$("wmk-operator"),{openTool:kind=>kind==="present"||kind==="materials"?showPresenter(kind):openWmkTool(kind)});
    }
    $("frame").hidden=false;$("stop").disabled=false;$("embedMsg").textContent="A reunião será gerenciada pelo servidor escolhido. Autorize microfone/câmera se desejar.";
  }catch(e){$("embedMsg").textContent=e.message+" Você pode abrir o link em uma nova aba.";$("frame").hidden=true}
 };
-$("stop").onclick=()=>{if(operator){operator.dispose();operator=null;$("wmk-operator").hidden=true}if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
+$("stop").onclick=()=>{if(operator){operator.dispose();operator=null;$("wmk-operator").hidden=true}if(presenterUrl){URL.revokeObjectURL(presenterUrl);presenterUrl=null}if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("wmk-presenter").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
 $("generate").click();
 })();
 </script></body></html>
