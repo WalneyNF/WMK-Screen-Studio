@@ -261,6 +261,30 @@ export function CaptionsPanel({ visible }: { visible: boolean }) {
         }}
       />
 
+      <section className="space-y-2 rounded-lg border border-border p-3">
+        <SectionLabel>Presets WMK de legendas</SectionLabel>
+        <p className="text-xs text-muted-foreground">Aplique estilos rápidos, depois ajuste fontes, cores e posição nos controles abaixo.</p>
+        <div className="grid grid-cols-2 gap-2">
+          <Button type="button" variant="secondary" size="sm" disabled={!captions.length}
+            onClick={() => setCaptionSettings({ enabled:true, fontSizePx:54, textColor:"#ffffff", sentenceBackground:"#18181b", wordBackground:"#c8ff3d", wordTextColor:"#111111", sentenceRadiusPx:16, wordRadiusPx:12, bottomOffsetPx:72, wordHighlight:wordTimingsAvailable })}>Shorts dinâmico</Button>
+          <Button type="button" variant="secondary" size="sm" disabled={!captions.length}
+            onClick={() => setCaptionSettings({ enabled:true, fontSizePx:34, textColor:"#ffffff", sentenceBackground:"#18181b", wordBackground:"#26d3f2", sentenceRadiusPx:10, bottomOffsetPx:48, wordHighlight:false })}>Aula legível</Button>
+          <Button type="button" variant="secondary" size="sm" disabled={!captions.length}
+            onClick={() => setCaptionSettings({ enabled:true, fontSizePx:42, textColor:"#ffffff", sentenceBackground:null, wordBackground:"#a759ff", bottomOffsetPx:58, wordHighlight:wordTimingsAvailable })}>Sem fundo</Button>
+          <Button type="button" variant="outline" size="sm" disabled={!captions.length}
+            onClick={() => setCaptionSettings({ enabled:true, fontSizePx:38, textColor:"#ffffff", sentenceBackground:"#242236", wordHighlight:false, bottomOffsetPx:52 })}>Podcast</Button>
+        </div>
+        {!wordTimingsAvailable && <p className="text-xs text-muted-foreground">Destaque palavra a palavra exige tempos por palavra gerados pelo Whisper. SRT/VTT importados exibem frases completas.</p>}
+      </section>
+      <section className="space-y-2 rounded-lg border border-border p-3">
+        <SectionLabel>Tradução assistida por IA (opcional)</SectionLabel>
+        <p className="text-xs text-muted-foreground">Exporte VTT, revise os dados e envie ao provedor de IA de sua escolha. Peça para preservar exatamente os tempos. Depois importe o arquivo traduzido. Nenhuma chave ou conteúdo é enviado automaticamente.</p>
+        <Button type="button" variant="outline" size="sm" disabled={!captions.length} onClick={() => {
+          const prompt = "Traduza estas legendas preservando rigorosamente números de cues e timestamps. Responda apenas com WEBVTT válido, sem explicações. Preserve quebras, ordem e sincronização. Revise nomes próprios. Conteúdo abaixo:\\n\\n" + serializeSubtitleFile(captions,"vtt");
+          void navigator.clipboard.writeText(prompt).then(() => setFileMessage("Pedido de tradução copiado. Revise os dados antes de enviar à IA.")).catch(() => setFileMessage("Não foi possível copiar automaticamente; exporte o VTT para sua IA."));
+        }}>Copiar pedido de tradução</Button>
+      </section>
+
       <CaptionStyleControls
         hasCaptions={cueCount > 0}
         wordTimingsAvailable={wordTimingsAvailable}
