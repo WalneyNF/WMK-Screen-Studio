@@ -11,6 +11,7 @@
     {id:"moderacao",label:"🛡️ Moderador"},
     {id:"turma",label:"📚 Sala e atividades"}
   ];
+  const FAVORITES_KEY="wmk.meeting.operator.favorites.v1";
   const commands = [
     {id:"audio",name:"Ligar/desligar meu microfone",group:"basicos",cmd:"toggleAudio"},
     {id:"video",name:"Ligar/desligar minha câmera",group:"basicos",cmd:"toggleVideo"},
@@ -43,6 +44,8 @@
     if (!api || !host) throw Error("Reunião ou contêiner de comandos indisponível.");
     host.replaceChildren();
     let connected=false,localId=null,role="desconhecido",selectedCategory="basicos",search="",selectedId="";
+    let favorites=[];
+    try{const stored=JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]");if(Array.isArray(stored))favorites=stored.filter(x=>typeof x==="string"&&commands.some(a=>a.id===x)).slice(0,30)}catch{}
     const participants=new Map(); const log=[]; const opts=options||{};
     const elt=(tag,className,text)=>{
       const n=document.createElement(tag);if(className)n.className=className;
@@ -54,6 +57,7 @@
     const status=elt("p","wmk-op-status","Conectando à reunião…");
     status.setAttribute("role","status");
     const select=elt("select","wmk-op-select");
+    {const o=elt("option","","⭐ Meus favoritos");o.value="favoritos";select.appendChild(o)}
     select.setAttribute("aria-label","Categoria de comandos");
     for(const x of categories){const o=elt("option","",x.label);o.value=x.id;select.appendChild(o)}
     const input=elt("input","wmk-op-input");input.placeholder="Pesquisar comandos (ex.: silenciar, chat, sala)";
@@ -89,13 +93,22 @@
       const isMod=role==="moderator";
       for(const action of commands.filter(x=>
         (!search|| (x.name+" "+x.cmd+" "+x.id).toLowerCase().includes(search)) &&
-        (search||x.group===selectedCategory))) {
+        (search||(selectedCategory==="favoritos"?favorites.includes(x.id):x.group===selectedCategory)))) {
+        const wrapper=elt("div","wmk-op-card");
         const btn=elt("button","wmk-op-action",action.name);
+        const star=elt("button","wmk-op-star",favorites.includes(action.id)?"★ Favorito":"☆ Favoritar");
+        star.type="button";
+        star.setAttribute("aria-label",(favorites.includes(action.id)?"Remover favorito: ":"Adicionar favorito: ")+action.name);
+        star.addEventListener("click",()=>{
+          favorites=favorites.includes(action.id)?favorites.filter(x=>x!==action.id):[...favorites,action.id];
+          try{localStorage.setItem(FAVORITES_KEY,JSON.stringify(favorites))}catch{track("Não foi possível salvar favoritos neste navegador.")}
+          render();
+        });
         const needTarget=Boolean(action.target);
         btn.disabled=!connected || (action.moderator&&!isMod) || (needTarget&&!selectedId);
         btn.title=action.moderator&&!isMod?"Exige papel de moderador confirmado pelo Jitsi":needTarget&&!selectedId?"Selecione um participante":"";
         btn.addEventListener("click",()=>run(action));
-        list.appendChild(btn);
+        wrapper.append(btn,star);list.appendChild(wrapper);
       }
       if(!list.children.length)list.appendChild(elt("p","","Nenhum comando encontrado."));
     }
@@ -136,6 +149,12 @@
       connected=true;localId=event?.id||null;
       if(localId)participants.set(localId,event?.displayName||"Você");
       renderTargets();track("Conectado. Aguardando confirmação do papel na reunião.");render();
+      if(typeof api.getRole==="function"){
+        Promise.resolve(api.getRole()).then(r=>{
+          if(!connected||typeof r!=="string")return;
+          role=r;track("Papel informado pela API: "+r);render();
+        }).catch(()=>{});
+      }
     });
     register("participantRoleChanged",event=>{
       if(event?.id===localId || (!event?.id&&localId)) {
