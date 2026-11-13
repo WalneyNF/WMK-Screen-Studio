@@ -18,6 +18,15 @@
     {id:"hand",name:"Levantar/abaixar minha mão",group:"basicos",cmd:"toggleRaiseHand"},
     {id:"screen",name:"Compartilhar/parar minha tela",group:"basicos",cmd:"toggleShareScreen"},
     {id:"exit",name:"Sair da reunião",group:"basicos",cmd:"hangup",confirm:true},
+    {id:"pin",name:"Destacar pessoa selecionada",group:"visual",cmd:"pinParticipant",target:true},
+    {id:"unpin",name:"Voltar à seleção automática",group:"visual",cmd:"pinParticipant",args:()=>[null]},
+    {id:"two",name:"Duas pessoas / debate (grade Jitsi)",group:"visual",cmd:"toggleTileView",note:"A grade não garante somente duas câmeras. Layout duplo exato requer compositor WMK."},
+    {id:"sharevideo",name:"Compartilhar vídeo por URL",group:"visual",cmd:"startShareVideo",text:true,textKind:"video"},
+    {id:"stopvideo",name:"Parar vídeo compartilhado",group:"visual",cmd:"stopShareVideo"},
+    {id:"timer",name:"Definir tempo previsto da reunião",group:"turma",cmd:"setMeetingTimer",text:true,textKind:"timer"},
+    {id:"timerOff",name:"Ocultar temporizador da reunião",group:"turma",cmd:"setMeetingTimer",args:()=>[{duration:0}]},
+    {id:"present",name:"Apresentar PDF ou slides da minha tela",group:"turma",local:"present"},
+    {id:"materials",name:"Preparar link de documento para colegas",group:"turma",local:"materials"},
     {id:"tile",name:"Alternar grade de vídeos",group:"visual",cmd:"toggleTileView"},
     {id:"filmstrip",name:"Mostrar/ocultar miniaturas",group:"visual",cmd:"toggleFilmStrip"},
     {id:"participants",name:"Mostrar painel de participantes",group:"visual",cmd:"toggleParticipantsPane",args:()=>[true]},
@@ -30,6 +39,7 @@
     {id:"mutevideo",name:"Desligar vídeo da pessoa selecionada",group:"moderacao",cmd:"muteRemoteParticipant",target:true,moderator:true,confirm:true,args:t=>[t,"video"]},
     {id:"unmute",name:"Pedir para pessoa ligar microfone",group:"moderacao",cmd:"askToUnmute",target:true,moderator:true},
     {id:"kick",name:"Remover participante da reunião",group:"moderacao",cmd:"kickParticipant",target:true,moderator:true,confirm:true},
+    {id:"endall",name:"Encerrar reunião para todos (se habilitado no servidor)",group:"moderacao",cmd:"endConference",moderator:true,confirm:true},
     {id:"grant",name:"Conceder moderação ao selecionado",group:"moderacao",cmd:"grantModerator",target:true,moderator:true,confirm:true},
     {id:"lobbyon",name:"Solicitar ativação da sala de espera",group:"moderacao",cmd:"toggleLobby",moderator:true,confirm:true,args:()=>[true]},
     {id:"lobbyoff",name:"Solicitar desativação da sala de espera",group:"moderacao",cmd:"toggleLobby",moderator:true,confirm:true,args:()=>[false]},
@@ -126,11 +136,20 @@
       }
       let args=action.args?action.args(target):action.target?[target]:[];
       if(action.text){
-        const label=action.id==="room"?"Nome da sala de grupos":"Assunto da reunião";
+        const label=action.textKind==="video"?"Link HTTPS do vídeo (YouTube ou MP4)"
+          :action.textKind==="timer"?"Duração da reunião em minutos (1 a 480)"
+          :action.id==="room"?"Nome da sala de grupos":"Assunto da reunião";
         const value=window.prompt(label);if(value===null)return;
-        const sanitized=value.trim().slice(0,120);
-        if(!sanitized){track("Informe um texto não vazio.");return}
-        args=[sanitized];
+        const sanitized=value.trim().slice(0,240);
+        if(!sanitized){track("Informe um valor.");return}
+        if(action.textKind==="timer"){
+          const mins=Number(sanitized);
+          if(!Number.isInteger(mins)||mins<1||mins>480){track("Duração inválida; use 1 a 480 minutos.");return}
+          args=[{duration:mins*60}];
+        }else if(action.textKind==="video"){
+          try{const u=new URL(sanitized);if(u.protocol!=="https:")throw Error("HTTPS necessário.");args=[u.href]}
+          catch{track("Link de vídeo inválido ou sem HTTPS.");return}
+        }else args=[sanitized];
       }
       if(action.confirm){
         const dest=target?(participants.get(target)||target):"todos";
