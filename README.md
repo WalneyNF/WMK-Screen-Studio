@@ -24,6 +24,9 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **WMK Live Video Helper (experimental):** painel **Análise de audiência → Meus vídeos no chat** para cadastrar links de vídeos do YouTube, pesquisar por título/assunto, abrir prévia privada e copiar resposta com link para o chat. O vídeo ainda **não** é sobreposto à gravação nem enviado automaticamente ao YouTube; isso depende do futuro compositor e de OAuth.
+
+
 - **[Legendas com IA e assistente ao vivo — manual](manual-legendas-assistente-live.html)** — importar/exportar SRT/VTT, verificar legibilidade, aplicar presets, preparar análise com IA e selecionar perguntas de espectadores para consultas privadas. Os conectores de IA e o chat em tempo real continuam pendentes de implementação e teste.
 
 
