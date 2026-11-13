@@ -2091,14 +2091,23 @@ fn editor_window_builder<'a>(
             .traffic_light_position(tauri::LogicalPosition::new(12.0, macos_traffic_light_y()));
     }
 
-    // Windows/Linux: the editor renders its own title bar (EditorTitleBar with
-    // min/max/close controls), so native decorations would double up.
-    #[cfg(not(target_os = "macos"))]
+    // WMK on Windows now launches as a normal native application. Keep a
+    // native title bar as a reliable fallback when the embedded web renderer
+    // does not finish loading (diagnosis of the tray-only beta).
+    #[cfg(target_os = "windows")]
+    {
+        builder = builder.decorations(true);
+    }
+    // Linux retains its existing custom window chrome.
+    #[cfg(all(not(target_os = "macos"), not(target_os = "windows")))]
     {
         builder = builder.decorations(false);
     }
 
-    crate::webview_gpu::apply_gpu_args(builder)
+    // Do not force ANGLE/D3D11 on the WMK library shell: it must open even
+    // on low-end GPUs and older WebView2 drivers. Recording/rendering panels
+    // retain their specialized GPU settings.
+    builder
 }
 
 fn build_editor_window(
@@ -2112,6 +2121,22 @@ fn build_editor_window(
     // (must hop to the AppKit main thread — not safe on the tokio worker).
     present_on_active_monitor(app, &win)?;
     Ok(win)
+}
+
+/// Start the normal WMK window directly from Tauri's Ready event, which is on
+/// the UI event loop. Unlike requests originating from WebView IPC, this does
+/// not require a secondary thread or run_on_main_thread round-trip.
+pub fn open_main_window_on_ready(app: &AppHandle) -> tauri::Result<()> {
+    if let Some(win) = app.get_webview_window(LIBRARY_LABEL) {
+        return present_on_active_monitor(app, &win);
+    }
+    build_editor_window(
+        app,
+        LIBRARY_LABEL,
+        "editor.html?view=library",
+        "WMK Screen Studio — Biblioteca",
+    )?;
+    Ok(())
 }
 
 /// Focus an existing editor/library window, or schedule creation off the caller
