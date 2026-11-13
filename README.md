@@ -24,6 +24,10 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[WMK Creator Dashboard — bônus gratuito](wmk-creator-dashboard.html)** — painel para canais pequenos com perguntas frequentes, gráficos, dicas práticas, dados opcionais de vídeos e relatório HTML.
+- **[Manual do Creator Dashboard](manual-creator-dashboard.html)** — guia em português, exemplos de importação, métricas e uso de IA opcional.
+
+
 - **[Contrato OpenAPI da Audience API](docs-api/audience-openapi.json)** — especificação REST versionada para integrar dashboards, reuniões e aplicações externas.
 - **Painel nativo experimental:** a biblioteca do editor Tauri agora possui a entrada **Análise de audiência**, com importação CSV/JSON e abas para perguntas, assuntos e ideias. A integração ainda precisa ser compilada e testada no Windows.
 
