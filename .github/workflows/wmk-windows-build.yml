@@ -27,6 +27,19 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
+          # setup-node tries to run pnpm for automatic caching BEFORE it is installed.
+          package-manager-cache: false
+      - name: Preparar Corepack e pnpm
+        shell: pwsh
+        run: |
+          if (-not (Get-Command corepack -ErrorAction SilentlyContinue)) {
+            npm install --global corepack@0.34.5
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          corepack enable
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          corepack pnpm --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.98.0
