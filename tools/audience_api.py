@@ -244,6 +244,9 @@ def main(argv=None):
     importer = sub.add_parser("import", help="Importa mensagens CSV/JSON")
     importer.add_argument("--title", required=True)
     importer.add_argument("--file", type=Path, required=True)
+    exporter = sub.add_parser("export", help="Exporta relatório HTML offline")
+    exporter.add_argument("--live", required=True, type=int)
+    exporter.add_argument("--out", required=True, type=Path)
     serve = sub.add_parser("serve", help="Executa API de leitura")
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8767)
@@ -253,6 +256,14 @@ def main(argv=None):
         with connect(args.db) as db:
             idx,count = import_live(db,args.title,args.file)
         print(json.dumps({"live_id":idx,"imported":count},ensure_ascii=False))
+    elif args.command == "export":
+        with connect(args.db) as db:
+            summary = statistics(db, args.live)
+        if summary is None:
+            parser.error("Live não encontrada")
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(report_html(summary), encoding="utf-8")
+        print(f"Relatório HTML gerado: {args.out}")
     elif args.command == "serve":
         key = os.environ.get("WMK_AUDIENCE_API_KEY","")
         if args.key_file is not None:
