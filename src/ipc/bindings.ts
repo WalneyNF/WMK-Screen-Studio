@@ -125,6 +125,7 @@ export const commands = {
   /** Pause/resume native multi-monitor follow while a drawing tool is armed. */
   setAnnotationDisplayFollow: (follow: boolean) =>
     invoke<void>("set_annotation_display_follow", { follow }),
+  openRecorder: () => invoke<void>("open_recorder"),
   openLibrary: () => invoke<void>("open_library"),
   openEditor: (projectId: string) => invoke<void>("open_editor", { projectId }),
   presentWindow: () => invoke<void>("present_window"),
