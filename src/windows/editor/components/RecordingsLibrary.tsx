@@ -282,7 +282,7 @@ export function RecordingsLibrary({ currentProjectId, onOpenProject }: Recording
                             onClick={() => void remove(p.id, title)}
                           >
                             <Trash2 className="size-4" />
-                            Delete
+                            Excluir
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
