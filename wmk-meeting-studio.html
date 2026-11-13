@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WMK Meeting Studio — Salas de reunião e aula</title>
+<style>
+:root{color-scheme:dark;--bg:#090d1d;--surface:#181e35;--line:#353d60;--txt:#f5f6ff;--muted:#b8c5da;--accent:#a759ff;--cyan:#26d3f2}
+*{box-sizing:border-box}body{background:radial-gradient(circle at 10% 0,#302048,transparent 50%),var(--bg);color:var(--txt);font:15px/1.6 system-ui,Segoe UI,sans-serif;margin:0}
+main{max-width:1020px;padding:18px;margin:auto}header,section{background:var(--surface);border:1px solid var(--line);padding:22px;margin:14px 0;border-radius:17px}
+h1{font-size:clamp(26px,4vw,42px);margin:8px 0}h2{font-size:20px}p,small{color:var(--muted)}a{color:#91e8fc}label{font-weight:700;display:block;margin:12px 0 5px}
+input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:12px;border:1px solid #565f80;border-radius:10px;background:#10162a;color:#fff;min-width:0}
+button,.button{display:inline-block;border:1px solid #7654b9;background:#6533a8;color:#fff;padding:11px 16px;border-radius:10px;cursor:pointer;text-decoration:none;font-weight:700}
+button:disabled{cursor:not-allowed;opacity:.5}.secondary{background:#27304a;border-color:#535a7a}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 170px}.hint{background:#252c4b;padding:12px;border-left:3px solid var(--cyan);border-radius:8px}.status{min-height:30px;color:#a9f1df}
+.frame{width:100%;height:clamp(430px,73vh,820px);background:#080c17;border-radius:12px;overflow:hidden}#meet{width:100%;height:100%}#meet iframe{height:100%!important;width:100%!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tag{font-size:12px;border:1px solid #7654b9;border-radius:999px;padding:3px 10px;color:#cbb6ff}
+footer{color:var(--muted);font-size:12px;padding:18px}
+@media(max-width:650px){main{padding:8px}header,section{padding:14px}.grid{grid-template-columns:1fr}.frame{height:75vh}}
+</style></head><body><main>
+<header><div class="row" style="align-items:center;justify-content:space-between"><strong>WMK • MEETING STUDIO</strong><span class="tag">Laboratório de reuniões</span></div>
+<h1>Reuniões e aulas sem complicação</h1><p>Crie uma sala, compartilhe o link e entre pelo navegador do computador ou celular. Use a infraestrutura Jitsi; o WMK organiza a entrada.</p>
+<p><a href="manual-jitsi-integracao-desenvolvedores.html">Manual para desenvolvedores</a> · <a href="guia-jitsi-e-ferramentas-gratuitas.html">O que é Jitsi?</a></p></header>
+<section><h2>1. Configurar sala</h2>
+<div class="grid"><div><label for="server">Servidor Jitsi</label><input id="server" value="https://meet.jit.si" autocomplete="off" spellcheck="false"><small>Para testes, use o público; para uso contínuo em sua aplicação, configure um servidor próprio ou serviço contratado.</small></div>
+<div><label for="type">Tipo de sala (apenas organização local)</label><select id="type"><option value="reuniao">Reunião</option><option value="aula">Aula</option><option value="treinamento">Treinamento</option><option value="entrevista">Entrevista</option></select><small>Esta opção ainda não atribui papéis de professor ou moderador no servidor.</small></div></div>
+<label for="room">Nome único da sala</label><input id="room" maxlength="100" placeholder="Ex.: wmk-aula-python-123...">
+<div class="row" style="margin-top:14px"><button id="generate" type="button">Criar nome aleatório</button><button id="prepare" class="secondary" type="button">Preparar convite</button></div>
+<div id="setupError" class="status" role="status" aria-live="polite"></div>
+<div id="invite" hidden><label for="url">Link da sala</label><input id="url" readonly aria-label="Link da sala"><div class="row" style="margin-top:10px"><button id="copy" type="button">Copiar link</button><button id="share" class="secondary" type="button">Compartilhar pelo celular</button><a id="open" target="_blank" rel="noopener noreferrer" class="button secondary">Abrir reunião em nova aba</a></div>
+<p class="hint">Compartilhe apenas com convidados. O link não garante controle de acesso. Ative autenticação, sala de espera e permissões no servidor quando necessário.</p></div></section>
+<section><h2>2. Reunião integrada (opcional)</h2><p>Para quem deseja manter a chamada dentro desta página, o Jitsi oferece uma API de incorporação. Em alguns celulares e instalações, abrir em nova aba ou usar o aplicativo oficial pode ser mais compatível.</p>
+<div class="row"><button id="embed" type="button" class="secondary">Iniciar reunião nesta página</button><button id="stop" type="button" class="secondary" disabled>Encerrar visualização</button></div>
+<div id="embedMsg" class="status" role="status" aria-live="polite"></div>
+<div id="frame" class="frame" hidden><div id="meet"></div></div>
+<p class="hint"><strong>Privacidade:</strong> esta página não grava reunião, não salva chat e não recebe senhas. Seu áudio/vídeo é processado pelo servidor Jitsi escolhido. O botão “Encerrar visualização” fecha apenas esta conexão local, não expulsa outras pessoas.</p>
+</section>
+<section><h2>3. Próximos recursos WMK</h2><p>Área do professor, exercícios, IA individual, presença autenticada, quadro branco WMK e integração ao compositor de vídeo permanecem em desenvolvimento. <strong>Esta versão é um organizador e cliente Jitsi; não é um servidor de conferência independente.</strong></p>
+<p><a href="manual-servidor-reunioes-iniciantes.html">Aprender sobre servidores</a> · <a href="manual-classroom-studio.html">Plano de aula virtual</a></p></section>
+<footer>Walney Moreira Klein — walneyk@hotmail.com · WMK Screen Studio (MIT para código próprio) · Créditos do projeto original Capptivo e licenças de terceiros preservados.</footer></main>
+<script>
+(()=>{"use strict";
+const $=id=>document.getElementById(id);
+let api=null,activeUrl="";
+function safeServer(raw){const u=new URL(raw.trim());if(u.protocol!=="https:"||u.username||u.password||u.search||u.hash||u.pathname!=="/")throw Error("Informe somente o domínio HTTPS (ex.: https://meet.jit.si).");if(!/^[a-z0-9.-]+$/i.test(u.hostname))throw Error("Servidor inválido.");if(u.hostname==="localhost"||u.hostname.endsWith(".local"))throw Error("Use um domínio HTTPS público válido para acesso por celular.");return u.origin;}
+function safeRoom(raw){const room=raw.trim();if(!/^[A-Za-z0-9_-]{8,100}$/.test(room))throw Error("A sala deve ter entre 8 e 100 letras, números, _ ou -.");return room;}
+function makeName(){const bytes=new Uint8Array(14);if(!crypto?.getRandomValues)throw Error("Navegador sem geração criptográfica de nomes.");crypto.getRandomValues(bytes);return "wmk-"+Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");}
+function prepare(){try{const base=safeServer($("server").value),room=safeRoom($("room").value);activeUrl=base+"/"+encodeURIComponent(room);$("url").value=activeUrl;$("open").href=activeUrl;$("invite").hidden=false;$("setupError").textContent="Convite preparado. Nenhuma sala é reservada antes de entrar.";return {base,room}}catch(e){activeUrl="";$("invite").hidden=true;$("setupError").textContent=e.message;return null;}}
+$("generate").onclick=()=>{try{$("room").value=makeName();$("setupError").textContent="Nome de sala criado."}catch(e){$("setupError").textContent=e.message}};
+$("prepare").onclick=prepare;
+$("copy").onclick=async()=>{if(!activeUrl)return;try{await navigator.clipboard.writeText(activeUrl);$("setupError").textContent="Link copiado."}catch{$("url").select();$("setupError").textContent="Selecione e copie o link manualmente."}};
+$("share").onclick=async()=>{if(!activeUrl)return;try{if(navigator.share)await navigator.share({title:"Convite WMK",url:activeUrl});else{$("url").select();$("setupError").textContent="Compartilhamento não disponível: copie o link.";}}catch{}};
+$("embed").onclick=async()=>{
+ const target=prepare();if(!target)return;
+ $("embedMsg").textContent="Carregando Jitsi...";
+ if(api){try{api.dispose()}catch{}api=null}
+ $("meet").replaceChildren();
+ const domain=new URL(target.base).host;
+ const loaded=window.JitsiMeetExternalAPI?Promise.resolve():new Promise((resolve,reject)=>{
+   const s=document.createElement("script");s.src=target.base+"/external_api.js";s.onload=resolve;s.onerror=()=>reject(Error("Não foi possível carregar a API de integração deste servidor."));document.head.appendChild(s);
+ });
+ try{await loaded;if(!window.JitsiMeetExternalAPI)throw Error("API Jitsi indisponível.");
+   api=new window.JitsiMeetExternalAPI(domain,{roomName:target.room,parentNode:$("meet"),width:"100%",height:"100%",lang:"ptBR"});
+   $("frame").hidden=false;$("stop").disabled=false;$("embedMsg").textContent="A reunião será gerenciada pelo servidor escolhido. Autorize microfone/câmera se desejar.";
+ }catch(e){$("embedMsg").textContent=e.message+" Você pode abrir o link em uma nova aba.";$("frame").hidden=true}
+};
+$("stop").onclick=()=>{if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
+$("generate").click();
+})();
+</script></body></html>
