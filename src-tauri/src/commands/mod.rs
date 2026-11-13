@@ -44,6 +44,7 @@ macro_rules! command_handlers {
             $crate::commands::recording::begin_camera_file,
             $crate::commands::recording::write_camera_chunk,
             $crate::commands::recording::finish_camera_file,
+            $crate::windows::open_recorder,
             $crate::windows::hide_recorder,
             $crate::windows::set_recorder_layout,
             $crate::windows::set_recorder_bar_width,
