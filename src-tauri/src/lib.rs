@@ -1,4 +1,4 @@
-//! Capptivo Desktop — app entry (library form; `main.rs` just calls [`run`]).
+//! WMK Screen Studio — app entry (library form; `main.rs` just calls [`run`]).
 //!
 //! The builder stays thin: register plugins + the `media://` protocol, build
 //! state and the tray in `setup`, and register the command handler. All logic
@@ -99,7 +99,7 @@ pub fn run() {
             let app_data = app
                 .path()
                 .app_data_dir()
-                .unwrap_or_else(|_| std::env::temp_dir().join("Capptivo"));
+                .unwrap_or_else(|_| std::env::temp_dir().join("WMK Screen Studio"));
             media_protocol::serve(&app_data, &request)
         })
         .setup(|app| {
@@ -137,7 +137,7 @@ pub fn run() {
         })
         .invoke_handler(crate::command_handlers!())
         .build(tauri::generate_context!())
-        .expect("error while building Capptivo Desktop")
+        .expect("error while building WMK Screen Studio")
         .run(|app, event| match event {
             // Launch straight into the recorder — clicking the app means the
             // user wants to record, not hunt the tray icon first. Deferred to
@@ -148,7 +148,7 @@ pub fn run() {
                 if let Err(e) = windows::show_recorder_popover(app) {
                     tracing::warn!(%e, "failed to open recorder on launch");
                 }
-                updater::schedule_startup_check(app);
+                // Disable auto-updates until WMK signs and publishes its own update manifest.
             }
             // Dock / Finder reopen (macOS): show the recorder rather than
             // silently sitting in the menubar.
