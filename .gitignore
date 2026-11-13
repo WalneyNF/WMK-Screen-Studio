@@ -31,3 +31,12 @@ src-tauri/binaries/
 src-tauri/.updater-keys/
 .pnpm-store
 .agents
+# WMK Audience Intelligence: bancos privados e chaves (nunca publicar)
+tools/data/
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+.env
+.env.*
+!*.env.example
+__pycache__/
