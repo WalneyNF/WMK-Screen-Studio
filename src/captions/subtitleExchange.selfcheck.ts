@@ -1,4 +1,22 @@
-import { strict as assert } from "node:assert";
+// Executed by Node, but typechecked by the browser TypeScript project.
+// Keep this selfcheck dependency-free without requiring @types/node in frontend code.
+const assert = {
+  equal(actual: unknown, expected: unknown): void {
+    if (!Object.is(actual, expected))
+      throw new Error("Expected " + String(expected) + ", got " + String(actual));
+  },
+  ok(condition: unknown): void {
+    if (!condition) throw new Error("Assertion failed");
+  },
+  throws(fn: () => unknown, pattern: RegExp): void {
+    let thrown: unknown;
+    try { fn(); } catch (e) { thrown = e; }
+    if (thrown === undefined) throw new Error("Expected function to throw");
+    const message = thrown instanceof Error ? thrown.message : String(thrown);
+    if (!pattern.test(message))
+      throw new Error("Unexpected exception: " + message);
+  },
+};
 import { parseSubtitleFile, serializeSubtitleFile, inspectCaptions } from "./subtitleExchange.ts";
 
 const srt = "1\n00:00:01,000 --> 00:00:03,200\nOlá, mundo!\n\n2\n00:00:03,500 --> 00:00:05,000\nSegunda linha\n";
