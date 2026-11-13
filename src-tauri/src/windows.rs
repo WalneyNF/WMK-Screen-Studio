@@ -1370,6 +1370,12 @@ fn apply_centered_recorder_layout(
     )
 }
 
+/// Opens the recording controls from the WMK main library window.
+#[tauri::command]
+pub fn open_recorder(app: AppHandle) -> tauri::Result<()> {
+    show_recorder_popover(&app)
+}
+
 /// Create-or-show the recorder bar. Never hides — use for launch, Dock reopen,
 /// and "Open Recorder". Tray click / hotkey keep [`toggle_recorder_popover`].
 pub fn show_recorder_popover(app: &AppHandle) -> tauri::Result<()> {
