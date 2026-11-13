@@ -83,7 +83,7 @@ jobs:
           with (root/'SHA256SUMS.txt').open('w', encoding='ascii') as out:
               for p in sorted(files):
                   digest=hashlib.sha256(p.read_bytes()).hexdigest()
-                  out.write(f'{digest}  {p.name}\n')
+                  out.write(f'{digest}  {p.name.replace(chr(32), chr(46))}\n')
                   print(f'{p.name} | {p.stat().st_size} bytes | SHA-256 {digest}')
           PY
 
@@ -92,7 +92,8 @@ jobs:
         run: |
           set -euo pipefail
           if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "A release $RELEASE_TAG ja existe; nao sobrescrever instaladores."
+            echo "Release existente: atualizar apenas o checksum com nomes normalizados pelo GitHub."
+            gh release upload "$RELEASE_TAG" release-assets/SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
             gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
             exit 0
           fi
