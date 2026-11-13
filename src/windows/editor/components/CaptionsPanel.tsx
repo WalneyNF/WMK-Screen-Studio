@@ -295,7 +295,7 @@ export function CaptionsPanel({ visible }: { visible: boolean }) {
             "Seja conciso, explique o motivo de cada sugestão e preserve os tempos.",
             "",
             serializeSubtitleFile(captions, "vtt"),
-          ].join("\\n");
+          ].join("\n");
           void navigator.clipboard.writeText(instructions)
             .then(() => setFileMessage("Pedido de revisão das legendas copiado. Verifique dados pessoais antes de enviá-los à IA."))
             .catch(() => setFileMessage("Não foi possível copiar: exporte o VTT para sua IA."));
