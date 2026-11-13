@@ -13,7 +13,7 @@ import sys
 import unicodedata
 from collections import Counter
 from datetime import datetime, timezone
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
@@ -262,7 +262,7 @@ def main(argv=None):
         if args.host not in ("127.0.0.1","localhost","::1"):
             parser.error("Por segurança, esta versão aceita somente loopback; use uma VPN/proxy HTTPS autenticado em outra etapa.")
         db = connect(args.db)
-        server = ThreadingHTTPServer((args.host,args.port),Handler)
+        server = HTTPServer((args.host,args.port),Handler)
         server.db = db
         server.api_key = key
         print(f"WMK Audience API em http://{args.host}:{args.port}; dados em {args.db}")
