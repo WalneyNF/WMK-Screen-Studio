@@ -22,6 +22,8 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 ---
 
 
+- **[Manual de servidores e reuniões para iniciantes](manual-servidor-reunioes-iniciantes.html)** — explicação VPS, DNS, Docker, Jitsi, HTTPS, firewall, testes em celular, problemas comuns e integração futura com Meeting/Classroom.
+
 ## Pesquisa de mercado e planejamento público
 
 - **WMK Live Video Helper (experimental):** painel **Análise de audiência → Meus vídeos no chat** para cadastrar links de vídeos do YouTube, pesquisar por título/assunto, abrir prévia privada e copiar resposta com link para o chat. O vídeo ainda **não** é sobreposto à gravação nem enviado automaticamente ao YouTube; isso depende do futuro compositor e de OAuth.
