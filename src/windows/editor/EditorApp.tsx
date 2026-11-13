@@ -245,9 +245,19 @@ export function EditorApp() {
                 : undefined
             }
           />
-          <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
-            <span className="text-xs text-muted-foreground">Biblioteca de gravações</span>
-            <button type="button" className="rounded-md border border-border px-3 py-2 text-xs hover:bg-accent" onClick={() => setShell("audience")}>Análise de audiência</button>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-2">
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <strong className="text-sm text-foreground">WMK Screen Studio — Biblioteca</strong>
+              <span className="text-[11px] text-muted-foreground">Walney Moreira Klein — walneyk@hotmail.com</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="rounded-md border border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-85"
+                onClick={() => void commands.openRecorder().catch(() => showError("Não foi possível abrir o gravador. Consulte os diagnósticos."))}>
+                Nova gravação
+              </button>
+              <button type="button" className="rounded-md border border-border px-3 py-2 text-xs hover:bg-accent"
+                onClick={() => setShell("audience")}>Análise de audiência</button>
+            </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <RecordingsLibrary
