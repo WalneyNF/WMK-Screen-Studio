@@ -32,6 +32,7 @@ fn main() {
         "begin_camera_file",
         "write_camera_chunk",
         "finish_camera_file",
+        "open_recorder",
         "hide_recorder",
         "set_recorder_layout",
         "set_recorder_bar_width",
