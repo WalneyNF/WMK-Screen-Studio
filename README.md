@@ -24,6 +24,9 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[WMK Audience Intelligence — protótipo HTML funcional](wmk-audience-intelligence.html)** — importe chats CSV/JSON e analise perguntas, assuntos e ideias para próximos vídeos, localmente e sem contratar IA.
+
+
 - **[Lista técnica de Cenas, Múltiplas Fontes e IA (HTML)](tarefas-cenas-ia.html)** — 51 tarefas, critérios de aceite, acompanhamento e exportação JSON.
 
 
