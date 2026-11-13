@@ -394,7 +394,9 @@ try {
   expectFailure(
     () =>
       assembleUnsignedRelease({
-        root: REPOSITORY_ROOT,
+        // Use the synthetic release fixture, whose updater endpoint intentionally
+        // points to SECHAK-AG/capptivo; the real WMK fork has its own endpoint.
+        root: gitRoot,
         stagedRoot: tamperedStage,
         output: join(root, "tampered-output"),
         notesPath,
