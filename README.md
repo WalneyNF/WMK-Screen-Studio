@@ -15,7 +15,7 @@
 
 O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.com/SECHAK-AG/capptivo), criado para gravar a tela e editar vídeos de demonstração, aulas, tutoriais, apresentações e documentação de programas. Inclui zoom inteligente que acompanha o cursor, sugestões de zoom baseadas nos cliques, anotações na tela, personalização visual, webcam e legendas locais com Whisper.
 
-> **<a href="https://github.com/WalneyNF/WMK-Screen-Studio/releases/tag/v1.0.4-wmk-beta.1">⬇️ Baixar WMK Screen Studio para Windows (beta)</a>** — instalador público `.exe` e alternativa `.msi`, Windows x64. Versão experimental, sem assinatura digital; leia as notas antes de instalar. O Meeting Studio e o Classroom Studio ainda são protótipos independentes.
+> **<a href="https://github.com/WalneyNF/WMK-Screen-Studio/releases/tag/v1.0.4-wmk-beta.2">⬇️ Baixar WMK Screen Studio para Windows (beta)</a>** — instalador público `.exe` e alternativa `.msi`, Windows x64. Versão experimental, sem assinatura digital; leia as notas antes de instalar. O Meeting Studio e o Classroom Studio ainda são protótipos independentes.
 >
 > **Estado do projeto:** a identidade do instalador Windows foi configurada como **WMK Screen Studio** (`productName`, identificador `com.wmk.screenstudio`, ícones PNG/ICO derivados do tema WMK). Os componentes internos de código ainda preservam nomes técnicos Capptivo para evitar regressões na primeira compilação. O aplicativo continua baseado no Capptivo 1.0.4; **o instalador e a interface ainda precisam ser compilados e testados no Windows**. O atualizador automático do projeto original foi desativado na inicialização e o endereço foi isolado para o fork, sem atualização assinada WMK disponível.
 
