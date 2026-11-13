@@ -13,6 +13,7 @@ import { useI18n } from "@/lib/settings";
 import { commands } from "@/ipc/bindings";
 import { useEditorStore } from "./store";
 import { CaptionsPanel } from "./components/CaptionsPanel";
+import { AudiencePanel } from "./components/AudiencePanel";
 import { CameraPanel } from "./components/CameraPanel";
 import { ConfigPanel } from "./components/ConfigPanel";
 import { CursorPanel } from "./components/CursorPanel";
@@ -35,9 +36,10 @@ import { consumeGpuReloadedBanner } from "./render/gpuLifecycle";
 
 const SHOW_LIBRARY_EVENT = "shell://show-library";
 
-function initialShell(): "editor" | "library" {
+function initialShell(): "editor" | "library" | "audience" {
   const params = new URLSearchParams(window.location.search);
   if (params.get("view") === "library") return "library";
+  if (params.get("view") === "audience") return "audience";
   return "editor";
 }
 
@@ -66,12 +68,12 @@ export function EditorApp() {
   const projectId = useEditorStore((s) => s.projectId);
   const stage = useStageDimensions();
   const [exportOpen, setExportOpen] = useState(false);
-  const [shell, setShell] = useState<"editor" | "library">(initialShell);
+  const [shell, setShell] = useState<"editor" | "library" | "audience">(initialShell);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("view") === "library") {
+    if (params.get("view") === "library" || params.get("view") === "audience") {
       useEditorStore.setState({ ready: true, error: null });
       // Rust already showed this window on the active display — don't re-present
       // (that used to yank to the primary monitor and flash Spaces).
@@ -93,7 +95,7 @@ export function EditorApp() {
   // Drop the HTML splash once the shell can paint (library chrome, or editor
   // after `loadProject`). Idempotent — in-window library switches stay splash-free.
   useEffect(() => {
-    if (shell === "library" || ready || error) dismissEditorSplash();
+    if (shell === "library" || shell === "audience" || ready || error) dismissEditorSplash();
   }, [shell, ready, error]);
 
   useEffect(() => {
@@ -168,7 +170,7 @@ export function EditorApp() {
   }, [init]);
 
   useEffect(() => {
-    if (shell !== "library") return;
+    if (shell !== "library" && shell !== "audience") return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && useEditorStore.getState().projectId) {
         setShell("editor");
@@ -220,6 +222,17 @@ export function EditorApp() {
     useEditorStore.getState().setCurrentTime(time);
   };
 
+  if (shell === "audience") {
+    return (
+      <TooltipProvider delayDuration={200}>
+        <div className="flex h-screen min-h-0 flex-col bg-background text-foreground">
+          <EditorTitleBar title="WMK Audience Intelligence" onBack={() => setShell("library")} />
+          <AudiencePanel />
+        </div>
+      </TooltipProvider>
+    );
+  }
+
   if (shell === "library") {
     return (
       <TooltipProvider delayDuration={200}>
@@ -232,6 +245,10 @@ export function EditorApp() {
                 : undefined
             }
           />
+          <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
+            <span className="text-xs text-muted-foreground">Biblioteca de gravações</span>
+            <button type="button" className="rounded-md border border-border px-3 py-2 text-xs hover:bg-accent" onClick={() => setShell("audience")}>Análise de audiência</button>
+          </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <RecordingsLibrary
               currentProjectId={projectId}
