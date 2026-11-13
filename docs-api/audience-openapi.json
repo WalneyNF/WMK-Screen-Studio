@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "WMK Audience Intelligence API",
+    "version": "0.1.0",
+    "description": "API local de leitura para relatórios de lives. O código principal utiliza MIT. Dados exigem autenticação; somente /health é público."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8767",
+      "description": "Somente loopback (não expor diretamente na internet)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "schemas": {
+      "Live": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        }
+      },
+      "Topic": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "author": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "sent_at": {
+            "type": "string"
+          },
+          "question": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "topic": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Diagnóstico local",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Serviço ativo"
+          }
+        }
+      }
+    },
+    "/v1/lives": {
+      "get": {
+        "summary": "Lista das lives importadas",
+        "responses": {
+          "200": {
+            "description": "Lista de lives"
+          }
+        }
+      }
+    },
+    "/v1/lives/{id}/summary": {
+      "get": {
+        "summary": "Estatísticas de uma live",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resumo da live"
+          },
+          "404": {
+            "description": "Não encontrada"
+          }
+        }
+      }
+    },
+    "/v1/lives/{id}/topics": {
+      "get": {
+        "summary": "Assuntos de perguntas",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Temas"
+          }
+        }
+      }
+    },
+    "/v1/lives/{id}/questions": {
+      "get": {
+        "summary": "Perguntas identificadas, com paginação",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perguntas"
+          }
+        }
+      }
+    },
+    "/v1/lives/{id}/messages": {
+      "get": {
+        "summary": "Mensagens importadas, com paginação",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "maximum": 200
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensagens"
+          }
+        }
+      }
+    },
+    "/v1/lives/{id}/suggestions": {
+      "get": {
+        "summary": "Sugestões heurísticas de vídeos",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sugestões"
+          }
+        }
+      }
+    },
+    "/v1/lives/{id}/report.html": {
+      "get": {
+        "summary": "Relatório HTML de reunião",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HTML com gráficos de barras",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKey": []
+    }
+  ]
+}
