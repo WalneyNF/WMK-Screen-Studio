@@ -83,8 +83,10 @@ pub fn run() {
     tauri::Builder::default()
         // Must register first — later plugins depend on the single-instance lock order.
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            if let Err(e) = windows::show_recorder_popover(app) {
-                tracing::warn!(%e, "single-instance: failed to show recorder");
+            // Reopening WMK from the desktop shortcut must focus the main
+            // library window rather than an invisible tray-only recorder.
+            if let Err(e) = windows::open_library(app.clone()) {
+                tracing::warn!(%e, "single-instance: failed to show WMK library");
             }
         }))
         .plugin(tauri_plugin_opener::init())
@@ -139,16 +141,14 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("error while building WMK Screen Studio")
         .run(|app, event| match event {
-            // Launch straight into the recorder — clicking the app means the
-            // user wants to record, not hunt the tray icon first. Deferred to
-            // `Ready` (event loop live, Accessory policy applied) so the
-            // window's first orderFront happens in a settled app — see the
-            // comment in `setup`.
+            // Start with a standard, taskbar-visible WMK project library.
+            // open_library safely schedules WebView2 creation outside the
+            // synchronous startup callback on Windows.
             tauri::RunEvent::Ready => {
-                if let Err(e) = windows::show_recorder_popover(app) {
-                    tracing::warn!(%e, "failed to open recorder on launch");
+                if let Err(e) = windows::open_library(app.clone()) {
+                    tracing::warn!(%e, "failed to open WMK main window on launch");
                 }
-                // Disable auto-updates until WMK signs and publishes its own update manifest.
+                // Auto-updates remain disabled until WMK signs its own releases.
             }
             // Dock / Finder reopen (macOS): show the recorder rather than
             // silently sitting in the menubar.
