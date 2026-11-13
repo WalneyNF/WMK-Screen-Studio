@@ -24,6 +24,10 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[Manual da API Audience (HTML)](manual-audience-api.html)** — importar lives, consultar informações por API local com chave e gerar relatórios com gráficos para reuniões.
+- **[Código da API Audience (Python)](tools/audience_api.py)** — módulo independente, gratuito, baseado em SQLite e biblioteca padrão.
+
+
 - **[WMK Audience Intelligence — protótipo HTML funcional](wmk-audience-intelligence.html)** — importe chats CSV/JSON e analise perguntas, assuntos e ideias para próximos vídeos, localmente e sem contratar IA.
 
 
