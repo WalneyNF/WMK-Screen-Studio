@@ -24,6 +24,9 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[Lista técnica de Cenas, Múltiplas Fontes e IA (HTML)](tarefas-cenas-ia.html)** — 51 tarefas, critérios de aceite, acompanhamento e exportação JSON.
+
+
 - **[Relatório comparativo de 10 ferramentas (HTML)](relatorio-mercado.html)** — recursos, limitações, feedback qualitativo, fontes e oportunidades para o WMK Screen Studio.
 - **[Roadmap público (HTML)](roadmap.html)** — versões planejadas, prioridades, critérios de aceite e acompanhamento transparente do projeto.
 
