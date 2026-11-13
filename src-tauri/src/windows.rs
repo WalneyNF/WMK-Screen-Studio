@@ -2157,7 +2157,17 @@ fn ensure_editor_window(app: &AppHandle, label: &str, url: &str, title: &str) ->
             return;
         }
         if let Err(e) = build_editor_window(app, &label, &url, &title) {
-            tracing::warn!(%e, %label, "failed to create editor window");
+            tracing::error!(%e, %label, "failed to create editor window");
+            // The old code only logged the error, leaving users staring at
+            // the tray icon. A native dialog works even without a WebView.
+            use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
+            app.dialog()
+                .message(format!(
+                    "O WMK não conseguiu abrir a janela '{label}'.\n\nErro técnico: {e}\n\nVerifique o Microsoft Edge WebView2 Runtime."
+                ))
+                .title("WMK Screen Studio — Janela indisponível")
+                .kind(MessageDialogKind::Error)
+                .show(|_| {});
         }
     });
     Ok(())
