@@ -96,7 +96,11 @@ jobs:
             gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
             exit 0
           fi
-          mapfile -d '' assets < <(find release-assets -maxdepth 1 -type f -print0)
+          # gh run download may preserve an artifact subdirectory.
+          # All three validated files can be nested beneath release-assets.
+          mapfile -d '' assets < <(find release-assets -type f -print0)
+          printf 'Arquivos para publicar:\n'
+          printf '  %s\n' "${assets[@]}"
           test "${#assets[@]}" -eq 3
           gh release create "$RELEASE_TAG" "${assets[@]}" \
             --repo "$GITHUB_REPOSITORY" \
