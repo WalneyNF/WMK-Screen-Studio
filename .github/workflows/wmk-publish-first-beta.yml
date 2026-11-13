@@ -1,0 +1,107 @@
+name: WMK - Publicar primeira beta Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wmk-publish-first-beta.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: wmk-first-windows-beta
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Validar compilacao e publicar beta
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: v1.0.4-wmk-beta.1
+      BUILT_RUN_ID: '43392653558'
+      BUILT_SHA: 14efdba0c7f65b506d412696eb1515941b8995e7
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Verificar que a compilacao foi aprovada e corresponde ao fork
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${BUILT_RUN_ID}" \
+            --jq '{conclusion, status, head_sha, head_branch, path, repository: .repository.full_name}' \
+            > "$RUNNER_TEMP/build.json"
+          cat "$RUNNER_TEMP/build.json"
+          jq -e \
+            --arg repo "$GITHUB_REPOSITORY" \
+            --arg sha "$BUILT_SHA" \
+            '.conclusion == "success" and
+             .status == "completed" and
+             .head_sha == $sha and
+             .head_branch == "main" and
+             .repository == $repo and
+             (.path | startswith(".github/workflows/wmk-windows-build.yml"))' \
+            "$RUNNER_TEMP/build.json"
+
+      - name: Baixar instaladores da compilacao aprovada
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          gh run download "$BUILT_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name WMK-Screen-Studio-Windows-x64 \
+            --dir release-assets
+
+      - name: Validar instaladores e produzir SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          root=Path('release-assets')
+          files=[p for p in root.rglob('*') if p.is_file()]
+          exe=[p for p in files if p.suffix.lower()=='.exe']
+          msi=[p for p in files if p.suffix.lower()=='.msi']
+          if len(exe)!=1 or len(msi)!=1 or len(files)!=2:
+              raise SystemExit(f'Esperados exatamente 1 EXE e 1 MSI. Encontrados: {files}')
+          for p in files:
+              if p.stat().st_size < 1024*1024:
+                  raise SystemExit(f'Instalador muito pequeno: {p}')
+              with p.open('rb') as h:
+                  magic=h.read(8)
+              expected = b'MZ' if p.suffix.lower()=='.exe' else bytes.fromhex('D0CF11E0A1B11AE1')
+              if not magic.startswith(expected):
+                  raise SystemExit(f'Cabecalho de instalador invalido: {p}')
+          with (root/'SHA256SUMS.txt').open('w', encoding='ascii') as out:
+              for p in sorted(files):
+                  digest=hashlib.sha256(p.read_bytes()).hexdigest()
+                  out.write(f'{digest}  {p.name}\n')
+                  print(f'{p.name} | {p.stat().st_size} bytes | SHA-256 {digest}')
+          PY
+
+      - name: Publicar beta publica do Windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "A release $RELEASE_TAG ja existe; nao sobrescrever instaladores."
+            gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
+            exit 0
+          fi
+          mapfile -d '' assets < <(find release-assets -maxdepth 1 -type f -print0)
+          test "${#assets[@]}" -eq 3
+          gh release create "$RELEASE_TAG" "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$BUILT_SHA" \
+            --title "WMK Screen Studio v1.0.4 — Beta experimental Windows" \
+            --notes-file .github/wmk-first-beta-notes.md \
+            --prerelease
+          gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
