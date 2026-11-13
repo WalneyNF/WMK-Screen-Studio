@@ -21,6 +21,14 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ---
 
+
+## Pesquisa de mercado e planejamento público
+
+- **[Relatório comparativo de 10 ferramentas (HTML)](relatorio-mercado.html)** — recursos, limitações, feedback qualitativo, fontes e oportunidades para o WMK Screen Studio.
+- **[Roadmap público (HTML)](roadmap.html)** — versões planejadas, prioridades, critérios de aceite e acompanhamento transparente do projeto.
+
+> Estes documentos estão em português e distinguem funcionalidades existentes de propostas futuras. O código principal do Capptivo segue MIT, com obrigações adicionais para dependências de terceiros.
+
 ## Instalação
 
 ### Instaladores do WMK Screen Studio
