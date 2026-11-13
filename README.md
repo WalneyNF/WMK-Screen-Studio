@@ -1,363 +1,286 @@
 <p align="center">
-  <img src="public/logo-capptivo.svg" width="300" alt="Capptivo" />
+  <img src="public/wmk-screen-studio-logo.svg" width="780" alt="Logotipo do WMK Screen Studio" />
 </p>
+
+<p align="center"><strong>Grave, destaque, edite e apresente seus vídeos com qualidade profissional.</strong></p>
 
 <p align="center">
-  <strong>Give your demos the spotlight they deserve
-</strong>
+  <img alt="Versão base" src="https://img.shields.io/badge/vers%C3%A3o_base-1.0.4-9655ff?style=for-the-badge" />
+  <img alt="Licença MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-38bdf8?style=for-the-badge" />
+  <img alt="Windows, Linux e macOS" src="https://img.shields.io/badge/Windows%20%7C%20Linux%20%7C%20macOS-333?style=for-the-badge" />
+  <img alt="Rust e Tauri" src="https://img.shields.io/badge/Rust%20%2B%20Tauri-5945b4?style=for-the-badge" />
 </p>
 
-<p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-1.0.4-e66028?style=for-the-badge&labelColor=111" />
-  <img alt="license" src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge&labelColor=111" />
-  <img alt="platform" src="https://img.shields.io/badge/macOS%20%7C%20Windows%20%7C%20Linux-555?style=for-the-badge&labelColor=111&label=platform" />
-  <img alt="tauri" src="https://img.shields.io/badge/Tauri-24C8DB?style=for-the-badge&labelColor=111&logo=tauri&logoColor=24C8DB" />
-  <img alt="rust" src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&labelColor=111&logo=rust&logoColor=white" />
-  <img alt="react" src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&labelColor=111&logo=react&logoColor=61DAFB" />
-</p>
+# WMK Screen Studio
 
-<p>
-  Capptivo is your free, open-source alternative to Screen Studio and Cursorful. Create stunning screen recordings in seconds, not hours. Smart follow-cursor zoom, click-based auto zooms, editor presets, and on-device captions, your demos practically make themselves.
-</p>
+O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.com/SECHAK-AG/capptivo), criado para gravar a tela e editar vídeos de demonstração, aulas, tutoriais, apresentações e documentação de programas. Inclui zoom inteligente que acompanha o cursor, sugestões de zoom baseadas nos cliques, anotações na tela, personalização visual, webcam e legendas locais com Whisper.
 
-<p> Capptivo isn't a clone of Screen Studio, it's a tool I built for myself, with every feature designed around my own needs. Now I'm open-sourcing it under the <strong>MIT license</strong> so anyone can use, improve, and customize it — freely, in any project.
+> **Estado do projeto:** a documentação e a identidade visual do fork foram personalizadas. O código do aplicativo continua baseado no Capptivo 1.0.4; a mudança do README e do logotipo **não significa** que a interface, o nome exibido no executável ou os ícones dos instaladores já foram substituídos. Consulte os workflows para verificar se cada compilação passou.
 
-No more paying $29/month for video editing software. I hope you enjoy it, and contributions are always welcome. </p>
-
-<p align="center">
-  <a href="#download">Download</a>
-  ·
-  <a href="#quick-start">Quick start</a>
-  ·
-  <a href="#features">Features</a>
-  ·
-  <a href="#architecture">Architecture</a>
-  ·
-  <a href="#development">Development</a>
-  ·
-  <a href="#license">License</a>
-</p>
-
-https://github.com/user-attachments/assets/246054fe-8604-4ea0-ae7b-701eaafc25bf
+**Navegação:** [Instalação](#instalação) · [Compilação automática](#compilação-automática-no-github-actions) · [Requisitos](#requisitos-e-sistemas-compatíveis) · [Recursos](#recursos) · [Desenvolvimento](#desenvolvimento-local) · [Arquitetura](#arquitetura) · [Diagnósticos](#diagnósticos-locais) · [Licença e créditos](#licença-e-créditos)
 
 ---
 
-## Download
+## Instalação
 
-Installers are published on the
-[GitHub Releases](https://github.com/SECHAK-AG/capptivo/releases) page
-([latest](https://github.com/SECHAK-AG/capptivo/releases/latest)).
+### Instaladores do WMK Screen Studio
 
-| Platform            | What to grab                                               |
-| ------------------- | ---------------------------------------------------------- |
-| macOS Apple Silicon | `aarch64` / `aarch64-apple-darwin` `.dmg` or `.app.tar.gz` |
-| macOS Intel         | `x64` / `x86_64` `.dmg` or `.app.tar.gz`                   |
-| Windows             | `.msi` or `*-setup.exe`                                    |
-| Linux               | `.deb` / `.AppImage` / `.rpm`                              |
+Acesse o [GitHub Actions deste fork](https://github.com/WalneyNF/WMK-Screen-Studio/actions/workflows/wmk-windows-build.yml) para executar o workflow **WMK - Compilar Windows**. Quando terminar **com sucesso**, abra a execução e baixe o artefato **WMK-Screen-Studio-Windows-x64**, que deve conter um instalador `.exe` (NSIS) e outro `.msi`. São instaladores **sem assinatura digital**; o Windows poderá exibir um aviso de segurança. A compilação depende de o workflow funcionar corretamente.
 
-macOS builds are currently **unsigned**. On first launch: right-click → **Open**,
-or allow Capptivo under System Settings → Privacy & Security. Grant **Screen
-Recording** when prompted, then relaunch.
+Para consultar os **instaladores originais do Capptivo** (que não incorporam necessariamente as alterações deste fork), visite os [releases oficiais do projeto-base](https://github.com/SECHAK-AG/capptivo/releases).
 
-Captions need a system [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
-`whisper-cli` binary; the app downloads the model weights on first use.
+| Sistema | Formatos normalmente gerados pelo projeto original |
+| --- | --- |
+| Windows x64 | `.msi` ou `-setup.exe` |
+| macOS Apple Silicon | `aarch64` — `.dmg` ou `.app.tar.gz` |
+| macOS Intel | `x64` / `x86_64` — `.dmg` ou `.app.tar.gz` |
+| Linux | `.deb`, `.AppImage` ou `.rpm` |
 
-### Maintainers: cutting a release
+**macOS:** os pacotes do projeto original podem não estar notarizados. Na primeira abertura, use as opções de segurança do macOS e autorize a gravação da tela.
 
-GitHub Actions builds macOS (Intel + Apple Silicon), Windows, and Linux
-installers — no local Windows/Linux machines needed.
+**Legendas:** exigem o executável `whisper-cli` do projeto [whisper.cpp](https://github.com/ggerganov/whisper.cpp) instalado no sistema. O aplicativo pode baixar os pesos do modelo na primeira utilização; não depende de uma API em nuvem para transcrever.
 
-1. Bump the desktop version in `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, and the `desktop` package entry in `src-tauri/Cargo.lock`.
-   Keep all four entries identical.
-2. Commit and push the version change to the canonical [`SECHAK-AG/capptivo`](https://github.com/SECHAK-AG/capptivo) default branch.
-   Create and push a matching tag, for example `v0.1.0`:
+## Compilação automática no GitHub Actions
+
+O fork possui o workflow [WMK - Compilar Windows](https://github.com/WalneyNF/WMK-Screen-Studio/actions/workflows/wmk-windows-build.yml):
+
+1. Acesse a página do workflow.
+2. Selecione **Run workflow** e confirme a execução na branch `main`.
+3. Acompanhe as etapas de instalação, testes, obtenção do FFmpeg e compilação Tauri.
+4. Caso a execução fique verde, baixe o arquivo em **Artifacts**.
+5. Extraia o ZIP e instale o `.exe` ou `.msi` em um ambiente de testes.
+
+O workflow de desenvolvimento não precisa das chaves de assinatura da atualização automática. Seus instaladores são destinados a testes; publicar um release confiável exige verificações adicionais.
+
+### Publicação oficial com assinatura
+
+O workflow [Release](https://github.com/WalneyNF/WMK-Screen-Studio/actions/workflows/release.yml), herdado do Capptivo, é mais rigoroso e compila Windows, macOS e Linux. Ele exige uma tag existente no formato `vMAJOR.MINOR.PATCH` e a versão deve coincidir em `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` e na entrada do pacote desktop em `src-tauri/Cargo.lock`.
+
+Exemplo de preparação de tag, **somente depois de atualizar todas as versões**:
 
 ```bash
-git tag v0.1.0
+git tag v1.0.5
 git push origin main
-git push origin v0.1.0
+git push origin v1.0.5
 ```
 
-3. From the [Release workflow](https://github.com/SECHAK-AG/capptivo/actions/workflows/release.yml), select the canonical default branch and run it manually with that existing tag.
-   The workflow accepts only a `vMAJOR.MINOR.PATCH` tag whose commit is reachable from the canonical default branch and whose four version entries match the tag.
-   It creates or replaces the assets of a **draft** GitHub Release.
-   Review and publish the draft separately
+O workflow original requer, no ambiente protegido `release`, os segredos `TAURI_SIGNING_PRIVATE_KEY` e `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Os pacotes Windows do projeto-base não possuem assinatura Authenticode, e os pacotes macOS não são notarizados. **Não presuma que o atual workflow de release já foi adaptado completamente ao fork**: os scripts de publicação e endpoints herdados precisam ser revisados antes de um release oficial. Preserve as permissões mínimas do `GITHUB_TOKEN`.
 
-**Release environment and signing:** Configure the protected `release` environment with `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
-They are required to sign the updater artifacts for every platform.
-The current macOS bundles are ad hoc signed and not notarized.
-Windows bundles are not Authenticode-signed.
-Apple notarization and Windows code-signing credentials are separate future work
+## Requisitos e sistemas compatíveis
 
-**Permissions:** Keep the repository-default `GITHUB_TOKEN` permissions read-only.
-The publish job grants only its own `contents: write` scope.
-If policy blocks that scope, review the organization or enterprise Actions policy
+- **Windows:** Windows 10 versão 2004 (build 19041) ou posterior. O backend de captura requer GPU/adaptador com **Direct3D feature level 11_0** ou superior.
+- **macOS:** versão 13 ou posterior; conceda a permissão de gravação de tela.
+- **Linux:** distribuição moderna com **PipeWire 1.0+**, como Ubuntu 24.04, em X11 ou Wayland.
 
----
+### Como a gravação funciona em cada sistema
 
-## Platforms
+| Sistema | Captura e áudio |
+| --- | --- |
+| Windows | Windows.Graphics.Capture, áudio do sistema via WASAPI loopback; tentativa de aceleração por NVENC, QuickSync, AMF ou Media Foundation. |
+| macOS | ScreenCaptureKit, VideoToolbox para H.264 e fluxo complementar de áudio. |
+| Linux | xdg-desktop-portal e PipeWire; áudio por monitor PulseAudio/PipeWire. |
 
-Capptivo runs on:
+**Limitação no Linux:** não há seleção nativa de área nesse backend; use o recorte no editor. Em Wayland, o acompanhamento do cursor depende de metadados oferecidos pelo portal/PipeWire. Quando indisponíveis, o mouse aparece incorporado à gravação, sem dados separados para acompanhamento de zoom.
 
-- **macOS** 13.0+
-- **Windows** 10 version 2004, build 19041 or later, required to keep Capptivo overlays out of recordings
-- **Linux** on modern distros with PipeWire 1.0+ (e.g. Ubuntu 24.04+) — X11 and Wayland
+## Recursos
 
-Platform notes:
+### 1. Gravação de tela
 
-- **macOS** captures through native **ScreenCaptureKit** with **VideoToolbox** hardware
-  H.264 encoding; system audio comes from a companion SCK stream.
-- **Windows** captures through native **Windows.Graphics.Capture**.
-  Capptivo's current Windows capture backend requires Direct3D feature level
-  11_0 or later on the hardware adapter Windows selects by default.
-  Hardware encoding is probed per machine (NVENC / QuickSync / AMF / Media
-  Foundation), with system audio via **WASAPI loopback**.
-- **Linux** captures through **xdg-desktop-portal + PipeWire** — the screen/window is
-  picked in the system dialog. System audio comes from the PulseAudio/PipeWire
-  monitor. Cursor replay / follow-zoom use an X11 pointer probe on X11 sessions,
-  and PipeWire cursor **Metadata** on Wayland when the portal supports it
-  (otherwise the cursor is embedded in the recording and zoom-follow is unavailable).
-  Area selection isn't available yet on Linux — crop in the editor instead.
+- Gravação de monitor, janela e, onde compatível, uma área personalizada.
+- Sobreposição de webcam.
+- Microfone com seleção de dispositivo e áudio do sistema.
+- Contagem regressiva, pausa e retomada.
+- Anotações durante a gravação.
+- Atalho global **Alt+Shift+R** no Windows/Linux; **⌥⇧R** no macOS.
+- Captura nativa por sistema, codificação H.264 e MP4 fragmentado para maior tolerância a falhas.
+- Registro de cursor e cliques a 60 Hz em `cursor.json`.
+- Idiomas disponíveis no aplicativo original, incluindo português; a extensão da tradução deve ser verificada na interface.
 
----
+![Barra de gravação do Capptivo](assets/recording-bar-capptivo.webp)
 
-## Quick start
+### 2. Anotações na tela
+
+A barra flutuante permite selecionar elementos sem impedir o uso normal da área de trabalho quando está inativa.
+
+- Caneta, marca-texto e borracha.
+- Retângulo, elipse, linha, seta e texto.
+- Cores predefinidas ou personalizadas e tamanho do traço.
+- Desfazer, refazer e limpar.
+- Barra arrastável; a tecla **Esc** fecha painéis e sai da ferramenta conforme o contexto.
+
+![Exemplo de anotações](assets/annotation-demo.gif)
+
+### 3. Zoom inteligente e movimento
+
+- Fragmentos de zoom na linha do tempo, com atalho **Z**.
+- Sugestão automática de zoom a partir dos cliques de uma gravação nova.
+- Acompanhamento do cursor, com deslocamento suave.
+- Áreas fixas de zoom, ajustáveis por arraste.
+- Opção de aplicar zoom apenas à gravação ou à cena com fundo.
+- Controle de escala, suavização e aceleração/desaceleração das transições.
+- Redução opcional de margens do fundo e do tamanho da webcam durante o zoom.
+- Transições automáticas entre fragmentos.
+
+![Exemplo de zoom inteligente](assets/zoom-demo.gif)
+
+### 4. Personalização do cursor
+
+- Exibir ou ocultar cursor composto na edição.
+- Estilos macOS, Tahoe, Tahoe invertido e Minimal.
+- Tamanho, desfoque de movimento, animação do clique e balanço do cursor.
+
+![Personalização do cursor](assets/demo-cursor.gif)
+
+### 5. Aparência e composição
+
+- Fundos com imagens, cores sólidas, degradês e imagens próprias.
+- Ajuste de cores e ângulo do degradê.
+- Presets nomeados para salvar e reaplicar aparência, webcam, cursor, legendas e exportação.
+- Recorte de conteúdo para ocultar barras ou áreas desnecessárias.
+- Margens, cantos arredondados, sombras, desfoque e escurecimento do fundo.
+
+![Personalização visual](assets/appearance-demo.gif)
+
+### 6. Webcam
+
+- Sobreposição circular ou retangular (imagem sobre imagem).
+- Espelhamento, posição, margens e dimensões.
+- Arredondamento, sombra e recorte.
+- Ajuste opcional do tamanho da webcam durante o zoom.
+
+### 7. Legendas automáticas
+
+- Transcrição de fala local com **Whisper via whisper.cpp**.
+- Modelo de reconhecimento que pode ser baixado.
+- Estilo de legendas e incorporação na prévia e no arquivo exportado.
+
+![Demonstração de legendas](assets/captions-demo.gif)
+
+### 8. Linha do tempo
+
+- Reprodução, navegação e ajuste da composição.
+- Criação, sugestão, seleção, redimensionamento, divisão e exclusão de zooms.
+- Remoção de intervalos com atalho **T**.
+- Desfazer/refazer, ajuste de escala da linha do tempo e redefinição de fragmentos.
+
+### 9. Exportação
+
+- **MP4, WebM e GIF**.
+- Resoluções predefinidas até a resolução original.
+- Ajustes de qualidade de codificação e qualidade das cores do GIF.
+- Taxas de **24, 30 ou 60 FPS**.
+- Aprimoramento opcional da voz.
+- Progresso, seleção de pasta, notificação e abertura do arquivo no gerenciador.
+
+![Demonstração de exportação](assets/export-demo.gif)
+
+### 10. Projetos locais
+
+- Gravações armazenadas na pasta de dados do aplicativo (AppData / Application Support / XDG).
+- Biblioteca de gravações e renomeação de projetos.
+- Não exige conta para gravar ou editar.
+- Registro de dados do cursor separado do vídeo.
+
+## Desenvolvimento local
+
+### Pré-requisitos
+
+- **Rust 1.98.0**, com componentes rustfmt e Clippy.
+- **Node.js** na versão indicada em [`.node-version`](.node-version).
+- **Corepack**, que usa o pnpm fixado em `package.json`.
+- Ferramentas nativas de compilação da plataforma. No Windows, requer **MSVC C++ Build Tools**, incluindo `link.exe`.
+
+Clone e execute:
 
 ```bash
+git clone https://github.com/WalneyNF/WMK-Screen-Studio.git
+cd WMK-Screen-Studio
 corepack pnpm install
 corepack pnpm tauri dev
 ```
 
-Requires **Rust 1.98.0**, the **Node** version declared in `.node-version`, and
-**Corepack**. The Rust toolchain file includes rustfmt and Clippy, while Corepack
-selects the pinned pnpm release from `package.json`.
-FFmpeg is fetched automatically as a per-platform sidecar on first dev/build
-(`scripts/fetch-ffmpeg.mjs`), installed as `capptivo-ffmpeg` /
-`capptivo-ffprobe` so Linux packages do not collide with the system `ffmpeg`
-package. Exact source URLs, archive members, sizes, and SHA-256 digests are
-committed in `scripts/ffmpeg-sidecars.json`. The fetcher verifies downloaded,
-extracted, staged, and cached files before it permits Tauri's chained command
-to continue; a missing or invalid cache entry is replaced from the pinned
-source.
+O script `scripts/fetch-ffmpeg.mjs` busca os executáveis FFmpeg e ffprobe por plataforma e verifica tamanho e SHA-256 com o manifesto `scripts/ffmpeg-sidecars.json`. Os binários são renomeados para evitar colisões com instalações do sistema.
 
-On Windows, a portable Rust 1.98.0 toolchain can be placed under `.local`. Run
-development commands through the repository launcher so Rust is selected only
-from that directory:
+### Rust portátil no Windows
+
+É possível manter o Rust 1.98.0 em `.local`, sem substituir a instalação global. A ferramenta precisa estar previamente disponível nessa pasta.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/with-local-rust.ps1 corepack pnpm tauri dev
 ```
 
-The launcher prefers a verified versioned MSVC toolchain, such as
-`.local/rustup/toolchains/1.98.0-x86_64-pc-windows-msvc/bin`, and uses a sole
-matching alias only when that directory is absent. It keeps Cargo state and
-build output under `.local`, does not install or download Rust, and does not
-fall back to a host toolchain. Native Windows builds still require the MSVC C++
-Build Tools, including `link.exe`, on `PATH`; the
-portable directory replaces only the Rust installation.
+O lançador procura o toolchain MSVC validado em `.local/rustup/toolchains/1.98.0-x86_64-pc-windows-msvc/bin` e mantém o cache e a saída do Cargo em `.local`. Não instala Rust automaticamente e não substitui as ferramentas C++ de compilação.
 
-macOS: grant Screen Recording in System Settings on first launch, then relaunch.  
-Open the recorder with **⌥⇧R** (**Alt+Shift+R** on Windows/Linux), or click the tray icon.
-
----
-
-## Features
-
-### Recording
-
-- Menubar recorder with global hotkey (**⌥⇧R**)
-- Capture display, window, or custom area (with live frame guide)
-- Face-cam overlay while recording
-- Microphone capture (device picker)
-- System audio capture
-- Language switch (English / Français / Español / Italiano / Deutsch / Português / Русский / 日本語 / 한국어 / 中文 / العربية)
-- Countdown before start
-- Pause / resume
-- On-screen annotations while recording
-- Native pipeline per OS (ScreenCaptureKit / Windows.Graphics.Capture / PipeWire) → hardware H.264 → crash-safe fragmented MP4
-- 60 Hz cursor + click track saved with the project (`cursor.json`)
-
-![Capptivo recording bar](assets/recording-bar-capptivo.webp)
-![Capptivo annotation bar](assets/annotation-bar-capptivo.webp)
-
-### Annotations
-
-Draw on top of the screen while recording — floating toolbar, click-through when idle.
-
-- Select tool (pass clicks through to the desktop)
-- Pen and highlighter
-- Eraser
-- Shapes: rectangle, ellipse, line, arrow
-- Text
-- Color palette + custom picker
-- Brush size
-- Undo / redo / clear all
-- Draggable toolbar; Escape peels panels then closes
-
-![On-screen annotations while recording](assets/annotation-demo.gif)
-
-### Zoom & motion
-
-- Zoom fragments on the timeline (add with **Z** or Add fragment)
-- **Auto-suggest zooms** from clicks when you open a fresh recording (or Add fragment → Suggest zooms)
-- Follow-cursor zoom (pans with the pointer)
-- Fixed zoom regions (drag / resize the frame)
-- Scope: recording only or full scene (background included)
-- Scale, pan smoothness, ease in / ease out
-- Shrink background padding during zoom
-- Shrink face-cam during zoom (size at peak zoom)
-- Automatic motion between fragments
-
-![Follow-cursor zoom and motion](assets/zoom-demo.gif)
-
-### Cursor
-
-- Show / hide composited cursor
-- Styles: macOS, Tahoe, Tahoe inverted, Minimal
-- Cursor size
-- Motion blur
-- Click bounce + bounce speed
-- Cursor sway
-
-![Cursor style and motion](assets/demo-cursor.gif)
-
-### Look & composition
-
-- Backgrounds: image presets, gradients, solid colors, or upload your own
-- Custom gradient angle / colors
-- **Named editor presets** — save / apply look, face cam, cursor, captions, and export settings
-- Screen content crop (hide chrome / clutter)
-- Video padding
-- Recording corner radius
-- Recording shadow
-- Background blur
-- Background darkness
-
-![Backgrounds, padding, and composition](assets/appearance-demo.gif)
-
-### Face cam
-
-- Round or rectangular PiP
-- Mirror webcam
-- Corner position + margin from the frame edge
-- Size / width / height
-- Roundness (rectangular)
-- Shadow intensity
-- Crop face cam
-- Layout that stays in sync with zoom (optional shrink during zoom)
-
-### Captions
-
-- On-device speech-to-text (Whisper via whisper.cpp)
-- Downloadable model, no cloud required
-- Generate, style, and burn captions into preview + export
-
-![Captions demo](assets/captions-demo.gif)
-
-### Timeline
-
-- Scrub and play the composition
-- Zoom fragments (add, suggest from clicks, select, resize, split, delete)
-- Trim gaps (add with **T**)
-- Undo / redo
-- Timeline zoom (auto / manual)
-- Reset fragments
-
-### Export
-
-- Formats: MP4, WebM, GIF
-- Resolution presets (low → original)
-- Encoding quality / GIF color quality
-- Frame rate (24 / 30 / 60)
-- Optional voice enhancement (podcast)
-- Progress UI, save dialog, notification + reveal in Finder / Explorer / file manager
-
-![Export demo](assets/export-demo.gif)
-
-### Local-first
-
-- Projects stored in the OS app-data directory (Application Support / AppData / XDG)
-- In-app recordings library
-- Rename projects
-- No account required to record or edit
-- UI languages: English, Français, Español, Italiano, Deutsch, Português, Русский, 日本語, 한국어, 中文, العربية
-
----
-
-## Architecture
-
-```
-Capture  →  bounded frame channel  →  FFmpeg / VideoToolbox  →  screen.mp4
-Cursor   →  cursor.json
-UI       →  typed IPC projection of Rust state
-Editor   →  media:// (HTTP Range) + canvas compositor → export
-```
-
-Rust owns capture, encoding, and storage. The React shell is presentation only — domain modules never import `tauri::*`.
-
-```
-src-tauri/src/
-├── recorder/     # CaptureBackend → encoder (no Tauri)
-├── cursor/       # 60 Hz pointer tracker (CoreGraphics / Win32 / X11)
-├── project/      # local store + schema
-├── commands/     # thin IPC adapters
-└── …             # tray, windows, media protocol
-```
-
----
-
-## Development
+### Testes e verificações
 
 ```bash
-corepack pnpm tauri dev        # app + Vite
-cd src-tauri && cargo test --no-default-features
+corepack pnpm lint
+corepack pnpm test
+corepack pnpm build
+corepack pnpm tauri dev
+```
+
+Rust (na pasta `src-tauri`):
+
+```bash
+cargo test --no-default-features
 cargo check --no-default-features
 ```
 
-Windows development with portable Rust uses the repository root:
+Rust portátil no Windows:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/with-local-rust.ps1 cargo test --manifest-path src-tauri/Cargo.toml --no-default-features
 powershell -ExecutionPolicy Bypass -File scripts/with-local-rust.ps1 cargo check --manifest-path src-tauri/Cargo.toml --no-default-features
 ```
 
+## Arquitetura
+
+```text
+Captura  → canal limitado de quadros → FFmpeg / VideoToolbox → screen.mp4
+Cursor   → cursor.json
+Interface React → IPC tipado → serviços Rust
+Editor   → media:// (HTTP Range) + composição em canvas → exportação
+```
+
+O backend **Rust** cuida da captura, codificação e persistência. O frontend **React + TypeScript** apresenta a interface; os módulos de domínio não devem depender diretamente de `tauri::*`.
+
+```text
+src-tauri/src/
+├── recorder/   # backend de captura e codificador
+├── cursor/     # rastreamento de ponteiro a 60 Hz
+├── project/    # armazenamento local e esquema
+├── commands/   # adaptadores IPC
+└── ...         # bandeja, janelas, protocolo de mídia
+```
+
+A interface utiliza, entre outras dependências, **React 19, Tauri 2, TypeScript e PixiJS**.
+
+## Diagnósticos locais
+
+O aplicativo guarda até **200 códigos de diagnóstico** no arquivo `diagnostics/diagnostics-v1.log` dentro do diretório de dados do usuário. Cada linha JSON contém horário Unix e código de categoria (captura nativa, gravação, exportação ou renderização).
+
+- O registro **não** inclui nomes de arquivos, caminhos, mídia, identificadores dos dispositivos nem rastreamento de pilha.
+- Ele **não é enviado automaticamente** para servidores.
+- No ícone da bandeja, com o aplicativo fora de uma gravação, use **Open Diagnostics…** (abrir diagnósticos) ou **Clear Diagnostics** (limpar diagnósticos).
+- Limpar remove o arquivo atual, mas não apaga arquivos antigos `logs/errors.log` ou `capptivo.*`.
+- O arquivo não é criptografado; entradas antigas são removidas por quantidade, e não por idade.
+- Se a gravação do log falhar, a gravação de tela não deve ser interrompida; uma falha posterior pode recriar o arquivo depois da limpeza.
+
+Saídas detalhadas do console de desenvolvimento são separadas do registro local.
+
+## Licença e créditos
+
+**Licença do aplicativo:** [MIT](LICENSE). Essa licença permite utilizar, modificar, distribuir e comercializar o código, desde que o aviso de copyright e a licença sejam mantidos.
+
+**Projeto original:** [Capptivo — SECHAK-AG](https://github.com/SECHAK-AG/capptivo), copyright **© 2026 idboussadel**. A autoria original e as condições da licença MIT permanecem preservadas.
+
+**Identidade e desenvolvimento do fork WMK:** **Walney Moreira Klein — walneyk@hotmail.com**.
+
+**Dependências de terceiros:** os executáveis FFmpeg incluídos nas compilações possuem obrigações próprias (algumas distribuições são GPL); `whisper.cpp`, fontes e pacotes npm/Rust também estão sujeitos às suas respectivas licenças. Consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) antes de redistribuir instaladores, especialmente em contexto comercial.
+
+O projeto e suas dependências são disponibilizados sem garantias, conforme as licenças correspondentes.
+
 ---
 
-## Local diagnostics
-
-Capptivo keeps the latest 200 diagnostic codes in `diagnostics/diagnostics-v1.log` under its application-data directory
-Each JSON line contains a Unix timestamp and a fixed code identifying a native, recorder, export, or renderer failure category
-The file contains no error text, file or media names, paths, stack traces, recordings, or device identifiers
-It is not uploaded automatically
-Detailed console output during development remains separate from this file
-
-While not recording, right-click the tray icon and choose **Open Diagnostics…** to locate the file, or **Clear Diagnostics** to empty it
-Only the current diagnostic file is cleared
-Older `logs/errors.log` and `capptivo.*` files are neither imported nor deleted
-The application does not add a warning history to recordings
-
-The file remains local to the current user's application data and is not encrypted
-Older entries are removed as new ones arrive, with no age-based expiration
-Clearing and writing are serialized, but a later failure can create a new entry after a clear
-Writes are best effort, and an interrupted write can lose diagnostic history
-An unavailable application-data path or failed write does not prevent recording and is not redirected to a temporary directory
-
-## License
-
-Copyright (c) 2026 idboussadel
-
-Capptivo Desktop is released under the [MIT License](LICENSE) (`MIT`). You are
-free to use, copy, modify, merge, publish, distribute, sublicense, and sell
-copies of the software, provided the copyright notice and permission notice
-are included in all copies or substantial portions of it.
-
-The software is provided **"AS IS", WITHOUT WARRANTY OF ANY KIND**, express or
-implied. See [LICENSE](LICENSE) for the full text.
-
-Bundled and downloaded third-party components (notably the FFmpeg sidecars,
-which are GPL-licensed) have their own licenses and are **not** covered by
-Capptivo's MIT license — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
-for what that means if you redistribute builds.
-
-By contributing, you agree that your contributions are licensed under the
-same terms (`MIT`).
+<p align="center"><strong>WMK Screen Studio</strong> · Projetos livres, documentação em português e ferramentas para desenvolvedores.</p>
