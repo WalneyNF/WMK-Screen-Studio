@@ -24,6 +24,9 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 ## Pesquisa de mercado e planejamento público
 
+- **[WMK Video Doctor (Python)](tools/wmk_video_doctor.py)** — diagnóstico experimental de arquivos exportados com FFprobe/FFmpeg: faixas de vídeo/áudio, duração e trechos escuros. Ainda não integrado ao Tauri e não substitui testes reais de captura.
+
+
 - **[WMK Creator Dashboard — bônus gratuito](wmk-creator-dashboard.html)** — painel para canais pequenos com perguntas frequentes, gráficos, dicas práticas, dados opcionais de vídeos e relatório HTML.
 - **[Manual do Creator Dashboard](manual-creator-dashboard.html)** — guia em português, exemplos de importação, métricas e uso de IA opcional.
 
