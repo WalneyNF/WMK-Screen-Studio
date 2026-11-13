@@ -91,6 +91,36 @@ export function CameraPanel({ visible = true }: { visible?: boolean }) {
           />
         </div>
 
+        <div className="space-y-2 rounded-lg border border-border bg-muted/20 p-3">
+          <SectionLabel>WMK — Presets rápidos de câmera</SectionLabel>
+          <p className="text-xs text-muted-foreground">Escolha um tamanho e um canto. Estes presets aproveitam o motor de webcam atual, sem adicionar câmeras extras.</p>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { label: "Pequena • esquerda", corner: "bottom-left", w: 240, h: 180, round: false },
+              { label: "Pequena • direita", corner: "bottom-right", w: 240, h: 180, round: false },
+              { label: "Superior esquerda", corner: "top-left", w: 320, h: 240, round: false },
+              { label: "Superior direita", corner: "top-right", w: 320, h: 240, round: false },
+              { label: "Apresentador grande", corner: "bottom-right", w: 560, h: 420, round: false },
+              { label: "Entrevista compacta", corner: "bottom-left", w: 480, h: 270, round: false },
+              { label: "Webcam circular", corner: "bottom-right", w: 240, h: 240, round: true },
+              { label: "Câmera widescreen", corner: "top-right", w: 560, h: 315, round: false },
+            ] as const).map((preset) => (
+              <button key={preset.label} type="button" disabled={!hasFaceCam}
+                className="rounded-md border border-border bg-background p-2 text-left text-xs hover:border-primary/70 disabled:opacity-40"
+                onClick={() => setFaceCam({
+                  corner: preset.corner,
+                  position: null,
+                  isRound: preset.round,
+                  widthPx: clamp(preset.w, preset.round ? FACE_CAM_ROUND_MIN : FACE_CAM_COMPOSITION.minWidth, preset.round ? FACE_CAM_ROUND_MAX : FACE_CAM_COMPOSITION.maxWidth),
+                  heightPx: clamp(preset.h, preset.round ? FACE_CAM_ROUND_MIN : FACE_CAM_COMPOSITION.minHeight, preset.round ? FACE_CAM_ROUND_MAX : FACE_CAM_COMPOSITION.maxHeight),
+                  roundness: preset.round ? 0 : 18,
+                })}>
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-2">
           <FieldLabelWithHint hint={t("camera.position.hint")}>
             {t("camera.position")}
