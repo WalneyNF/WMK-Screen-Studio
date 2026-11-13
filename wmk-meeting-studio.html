@@ -11,7 +11,7 @@ button,.button{display:inline-block;border:1px solid #7654b9;background:#6533a8;
 button:disabled{cursor:not-allowed;opacity:.5}.secondary{background:#27304a;border-color:#535a7a}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 170px}.hint{background:#252c4b;padding:12px;border-left:3px solid var(--cyan);border-radius:8px}.status{min-height:30px;color:#a9f1df}
 .frame{width:100%;height:clamp(430px,73vh,820px);background:#080c17;border-radius:12px;overflow:hidden}#meet{width:100%;height:100%}#meet iframe{height:100%!important;width:100%!important}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tag{font-size:12px;border:1px solid #7654b9;border-radius:999px;padding:3px 10px;color:#cbb6ff}
-footer{color:var(--muted);font-size:12px;padding:18px}.wmk-tools{display:flex;gap:9px;flex-wrap:wrap}.wmk-tools>*{flex:1 1 150px}.wmk-side{border:1px solid var(--line);background:#232b47;border-radius:12px;padding:14px;margin:12px 0}
+footer{color:var(--muted);font-size:12px;padding:18px}.wmk-op{border:1px solid var(--line);border-radius:12px;background:#202741;padding:14px}.wmk-op-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.wmk-op-row>*{flex:1 1 170px}.wmk-op-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:8px}.wmk-op-action{min-height:48px;background:#293654;border-color:#56658c;text-align:left;font-size:13px}.wmk-op-events{margin-top:16px}.wmk-op-status{font-size:13px;color:#a9f1df}.wmk-tools{display:flex;gap:9px;flex-wrap:wrap}.wmk-tools>*{flex:1 1 150px}.wmk-side{border:1px solid var(--line);background:#232b47;border-radius:12px;padding:14px;margin:12px 0}
 @media(max-width:650px){main{padding:8px}header,section{padding:14px}.grid{grid-template-columns:1fr}.frame{height:75vh}}
 </style></head><body><main>
 <header><div class="row" style="align-items:center;justify-content:space-between"><strong>WMK • MEETING STUDIO</strong><span class="tag">Laboratório de reuniões</span></div>
@@ -52,16 +52,18 @@ footer{color:var(--muted);font-size:12px;padding:18px}.wmk-tools{display:flex;ga
     <p id="wmk-copy-status" role="status"></p>
   </div>
 </div>
+<div id="wmk-operator" hidden></div>
 <div id="frame" class="frame" hidden><div id="meet"></div></div>
 <p class="hint"><strong>Privacidade:</strong> esta página não grava reunião, não salva chat e não recebe senhas. Seu áudio/vídeo é processado pelo servidor Jitsi escolhido. O botão “Encerrar visualização” fecha apenas esta conexão local, não expulsa outras pessoas.</p>
 </section>
 <section><h2>3. Próximos recursos WMK</h2><p>Área do professor, exercícios, IA individual, presença autenticada, quadro branco WMK e integração ao compositor de vídeo permanecem em desenvolvimento. <strong>Esta versão é um organizador e cliente Jitsi; não é um servidor de conferência independente.</strong></p>
 <p><a href="manual-servidor-reunioes-iniciantes.html">Aprender sobre servidores</a> · <a href="manual-classroom-studio.html">Plano de aula virtual</a></p></section>
 <footer>Walney Moreira Klein — walneyk@hotmail.com · WMK Screen Studio (MIT para código próprio) · Créditos do projeto original Capptivo e licenças de terceiros preservados.</footer></main>
+<script src="wmk-meeting-commands.js"></script>
 <script>
 (()=>{"use strict";
 const $=id=>document.getElementById(id);
-let api=null,activeUrl="";
+let api=null,activeUrl="",operator=null;
 function openWmkTool(kind) {
  $("wmk-side-panel").hidden=false;
  $("wmk-side-title").textContent=kind==="ai"?"WMK — Chat com IA":"WMK — Atividades";
@@ -93,6 +95,7 @@ $("share").onclick=async()=>{if(!activeUrl)return;try{if(navigator.share)await n
 $("embed").onclick=async()=>{
  const target=prepare();if(!target)return;
  $("embedMsg").textContent="Carregando Jitsi...";
+ if(operator){operator.dispose();operator=null;$("wmk-operator").hidden=true}
  if(api){try{api.dispose()}catch{}api=null}
  $("meet").replaceChildren();
  const domain=new URL(target.base).host;
@@ -111,10 +114,14 @@ $("embed").onclick=async()=>{
        if(event && event.key==="wmk-tasks")openWmkTool("tasks");
      });
    }
+   if(window.WMKMeetingCommands){
+     $("wmk-operator").hidden=false;
+     operator=window.WMKMeetingCommands.mount(api,$("wmk-operator"),{openTool:openWmkTool});
+   }
    $("frame").hidden=false;$("stop").disabled=false;$("embedMsg").textContent="A reunião será gerenciada pelo servidor escolhido. Autorize microfone/câmera se desejar.";
  }catch(e){$("embedMsg").textContent=e.message+" Você pode abrir o link em uma nova aba.";$("frame").hidden=true}
 };
-$("stop").onclick=()=>{if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
+$("stop").onclick=()=>{if(operator){operator.dispose();operator=null;$("wmk-operator").hidden=true}if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
 $("generate").click();
 })();
 </script></body></html>
