@@ -2,7 +2,8 @@
  * Captions inspector — local Whisper + web-matching style controls.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { parseSubtitleFile, serializeSubtitleFile, inspectCaptions } from "@/captions/subtitleExchange";
 import { listen } from "@tauri-apps/api/event";
 import { Loader2 } from "lucide-react";
 
@@ -50,6 +51,7 @@ export function CaptionsPanel({ visible }: { visible: boolean }) {
   const setCaptionSettings = useEditorStore((s) => s.setCaptionSettings);
   const generateCaptions = useEditorStore((s) => s.generateCaptions);
   const clearCaptions = useEditorStore((s) => s.clearCaptions);
+  const importCaptions = useEditorStore((s) => s.importCaptions);
   const updateCaptionTexts = useEditorStore((s) => s.updateCaptionTexts);
   const setCurrentTime = useEditorStore((s) => s.setCurrentTime);
   const setPlaying = useEditorStore((s) => s.setPlaying);
@@ -58,6 +60,26 @@ export function CaptionsPanel({ visible }: { visible: boolean }) {
   const [downloadPct, setDownloadPct] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [genPhase, setGenPhase] = useState<string | null>(null);
+  const [fileMessage, setFileMessage] = useState("");
+  const captionIssues = useMemo(() => inspectCaptions(captions), [captions]);
+  async function loadSubtitles(file?: File) {
+    if (!file) return;
+    try {
+      if (file.size > 4_000_000) throw new Error("Tamanho máximo: 4 MB");
+      const kind = file.name.toLowerCase().endsWith(".vtt") ? "vtt" : "srt";
+      const cues = parseSubtitleFile(await file.text(), kind);
+      importCaptions(cues);
+      setFileMessage(`${cues.length} legendas importadas. Revise sincronização e texto.`);
+    } catch (error) { setFileMessage(error instanceof Error ? error.message : "Erro ao importar."); }
+  }
+  function saveSubtitles(kind: "srt"|"vtt") {
+    if (!captions.length) return;
+    const blob = new Blob([serializeSubtitleFile(captions, kind)], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url; link.download = "wmk-legendas." + kind; link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   const refreshModel = useCallback(async () => {
     try {
@@ -204,6 +226,30 @@ export function CaptionsPanel({ visible }: { visible: boolean }) {
             {captionError}
           </p>
         ) : null}
+      </section>
+
+      <section className="space-y-3 rounded-lg border border-border p-3">
+        <SectionLabel>WMK — Arquivos de legendas</SectionLabel>
+        <p className="text-xs text-muted-foreground">Importe SRT ou VTT, edite e exporte. A importação substitui as legendas atuais do projeto. Salve uma cópia antes se necessário.</p>
+        <label className="block cursor-pointer rounded-md border border-border p-2 text-center text-xs hover:bg-muted">
+          Importar SRT / VTT
+          <input type="file" accept=".srt,.vtt,text/vtt" className="sr-only"
+            onChange={(e) => { void loadSubtitles(e.target.files?.[0]); e.currentTarget.value = ""; }} />
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <Button type="button" variant="outline" size="sm" disabled={!captions.length} onClick={() => saveSubtitles("srt")}>Exportar SRT</Button>
+          <Button type="button" variant="outline" size="sm" disabled={!captions.length} onClick={() => saveSubtitles("vtt")}>Exportar VTT</Button>
+        </div>
+        {fileMessage && <p role="status" className="text-xs text-muted-foreground">{fileMessage}</p>}
+      </section>
+      <section className="space-y-2 rounded-lg border border-border p-3">
+        <SectionLabel>Diagnóstico de leitura e sincronização</SectionLabel>
+        <p className="text-xs text-muted-foreground">Análise automática, sem IA: intervalos sobrepostos, linhas longas e leitura muito rápida. Alertas não alteram o vídeo.</p>
+        <p className="text-xs">{captions.length} legendas · {captionIssues.length} aviso(s)</p>
+        {captionIssues.slice(0,12).map((issue,i) => (
+          <p key={i} className="text-xs text-amber-600 dark:text-amber-400">Legenda {issue.index}: {issue.message}</p>
+        ))}
+        {captionIssues.length > 12 && <p className="text-xs text-muted-foreground">Mais {captionIssues.length - 12} avisos; reduza a velocidade ou revise as legendas.</p>}
       </section>
 
       <CaptionEditSheet
