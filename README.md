@@ -26,6 +26,9 @@ O **WMK Screen Studio** é um fork do projeto livre [Capptivo](https://github.co
 
 - **[Jitsi explicado do zero: ferramentas gratuitas e menor custo](guia-jitsi-e-ferramentas-gratuitas.html)** — o que é Jitsi, exemplos práticos, servidores, celulares, alternativas livres e custos reais.
 
+- **[WMK Meeting Studio — criar sala e entrar pelo celular](wmk-meeting-studio.html)** — protótipo responsivo, convites com nome aleatório, link para compartilhar e incorporação opcional do Jitsi. Requer acesso à internet e servidor Jitsi externo; não oferece autenticação própria.
+- **[Manual de integração Jitsi para desenvolvedores](manual-jitsi-integracao-desenvolvedores.html)** — exemplos HTML/React, servidor próprio, requisitos de segurança, extensões para aulas, IA individual e testes.
+
 ## Pesquisa de mercado e planejamento público
 
 - **WMK Live Video Helper (experimental):** painel **Análise de audiência → Meus vídeos no chat** para cadastrar links de vídeos do YouTube, pesquisar por título/assunto, abrir prévia privada e copiar resposta com link para o chat. O vídeo ainda **não** é sobreposto à gravação nem enviado automaticamente ao YouTube; isso depende do futuro compositor e de OAuth.
