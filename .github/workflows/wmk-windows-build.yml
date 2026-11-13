@@ -11,6 +11,10 @@ on:
       - 'tools/audience_api.py'
       - '.github/workflows/wmk-windows-build.yml'
 
+concurrency:
+  group: wmk-windows-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
