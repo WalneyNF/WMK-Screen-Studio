@@ -42,6 +42,25 @@ footer{color:var(--muted);font-size:12px;padding:18px}.wmk-op{border:1px solid v
     <button id="wmk-tiles" type="button" class="secondary">Ver participantes</button>
     <button id="wmk-ai" type="button">Chat com IA</button>
     <button id="wmk-tasks" type="button">Atividades</button>
+    <button id="wmk-translate" type="button" class="secondary">🌐 Legendas e tradução</button>
+  </div>
+  <div id="wmk-translate-panel" class="wmk-side" hidden>
+    <h2>🌐 Idiomas e acessibilidade</h2>
+    <p>Ative as legendas do Jitsi. Para tradução, o servidor precisa ter transcrição e motor de tradução configurados. Alterar o idioma da interface não traduz a voz.</p>
+    <label for="wmk-language">Idioma preferido para legendas (preferência local)</label>
+    <select id="wmk-language">
+      <option value="pt">Português</option><option value="en">Inglês</option>
+      <option value="es">Espanhol</option><option value="fr">Francês</option>
+      <option value="de">Alemão</option><option value="it">Italiano</option>
+      <option value="ja">Japonês</option><option value="zh">Chinês</option>
+    </select>
+    <div class="wmk-tools">
+      <button type="button" id="wmk-subtitles-toggle">Ligar/desligar legendas</button>
+      <button type="button" id="wmk-subtitles-set" class="secondary">Solicitar legendas no idioma escolhido</button>
+      <button type="button" id="wmk-subtitles-close" class="secondary">Fechar</button>
+    </div>
+    <p id="wmk-subtitles-status" role="status"></p>
+    <p class="hint">Se o servidor não tiver transcrição/tradução habilitadas, os botões não conseguem fornecer traduções. Sua voz não é traduzida por este painel. Privacidade e custos dependem do motor de transcrição/tradução configurado.</p>
   </div>
   <div id="wmk-side-panel" class="wmk-side" hidden>
     <h2 id="wmk-side-title">WMK Assistente</h2>
@@ -125,6 +144,19 @@ $("wmk-copy").onclick=async()=>{
  try{await navigator.clipboard.writeText(field.value);$("wmk-copy-status").textContent="Copiado. Nada foi enviado automaticamente."}
  catch{field.select();$("wmk-copy-status").textContent="Selecione e copie manualmente."}
 };
+$("wmk-translate").onclick=()=>{$("wmk-translate-panel").hidden=false;$("wmk-language").focus()};
+$("wmk-subtitles-close").onclick=()=>{$("wmk-translate-panel").hidden=true};
+$("wmk-subtitles-toggle").onclick=()=>{
+ if(!api){$("wmk-subtitles-status").textContent="Entre na reunião primeiro.";return}
+ try{api.executeCommand("toggleSubtitles");$("wmk-subtitles-status").textContent="Comando enviado. Verifique se o servidor oferece legendas."}
+ catch{$("wmk-subtitles-status").textContent="Legendas indisponíveis nesta reunião."}
+};
+$("wmk-subtitles-set").onclick=()=>{
+ if(!api){$("wmk-subtitles-status").textContent="Entre na reunião primeiro.";return}
+ const lang=$("wmk-language").value;
+ try{api.executeCommand("setSubtitles",true,true,lang);$("wmk-subtitles-status").textContent="Preferência de legenda "+lang+" solicitada. Tradução depende da configuração do servidor; não foi confirmada."}
+ catch{$("wmk-subtitles-status").textContent="Idioma de legenda não suportado nesta reunião."}
+};
 const safeCmd=(command)=>{try{if(api)api.executeCommand(command)}catch(e){$("embedMsg").textContent="Comando indisponível nesta sala."}};
 $("wmk-chat").onclick=()=>safeCmd("toggleChat");
 $("wmk-hand").onclick=()=>safeCmd("toggleRaiseHand");
@@ -166,7 +198,7 @@ $("embed").onclick=async()=>{
    $("frame").hidden=false;$("stop").disabled=false;$("embedMsg").textContent="A reunião será gerenciada pelo servidor escolhido. Autorize microfone/câmera se desejar.";
  }catch(e){$("embedMsg").textContent=e.message+" Você pode abrir o link em uma nova aba.";$("frame").hidden=true}
 };
-$("stop").onclick=()=>{if(operator){operator.dispose();operator=null;$("wmk-operator").hidden=true}if(presenterUrl){URL.revokeObjectURL(presenterUrl);presenterUrl=null}if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("wmk-presenter").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
+$("stop").onclick=()=>{if(operator){operator.dispose();operator=null;$("wmk-operator").hidden=true}if(presenterUrl){URL.revokeObjectURL(presenterUrl);presenterUrl=null}if(api){try{api.dispose()}catch{}api=null}$("meet").replaceChildren();$("frame").hidden=true;$("wmk-controls").hidden=true;$("wmk-side-panel").hidden=true;$("wmk-translate-panel").hidden=true;$("wmk-presenter").hidden=true;$("stop").disabled=true;$("embedMsg").textContent="Visualização encerrada neste dispositivo."};
 $("generate").click();
 })();
 </script></body></html>
