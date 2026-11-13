@@ -2,6 +2,14 @@ name: WMK - Compilar Windows
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'src-tauri/**'
+      - 'tests/test_audience_api.py'
+      - 'tools/audience_api.py'
+      - '.github/workflows/wmk-windows-build.yml'
 
 permissions:
   contents: read
@@ -13,15 +21,16 @@ jobs:
     env:
       RUSTUP_TOOLCHAIN: 1.98.0
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: dtolnay/rust-toolchain@f8be11a05b1d4f3fcebe6410cc16743212b999b0 # Rust 1.98.0
+      - uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: 1.98.0
           targets: x86_64-pc-windows-msvc
       - uses: actions/setup-python@v5
         with:
@@ -32,7 +41,7 @@ jobs:
       - run: corepack pnpm test
       - run: corepack pnpm fetch:ffmpeg --target x86_64-pc-windows-msvc
       - run: corepack pnpm tauri build --target x86_64-pc-windows-msvc --bundles nsis,msi --config .github/tauri.unsigned.conf.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@v4
         with:
           name: WMK-Screen-Studio-Windows-x64
           path: |
