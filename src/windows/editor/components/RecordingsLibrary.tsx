@@ -29,7 +29,7 @@ function formatCreatedAt(iso: string): string {
 }
 
 function displayTitle(p: ProjectSummary): string {
-  return p.title?.trim() || "Untitled recording";
+  return p.title?.trim() || "Gravação sem título";
 }
 
 function matchesNameFilter(project: ProjectSummary, query: string): boolean {
@@ -135,7 +135,7 @@ export function RecordingsLibrary({ currentProjectId, onOpenProject }: Recording
         setError(null);
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load recordings");
+      setError(e instanceof Error ? e.message : "Não foi possível carregar as gravações");
     }
   }, []);
 
@@ -144,7 +144,7 @@ export function RecordingsLibrary({ currentProjectId, onOpenProject }: Recording
   }, [refresh]);
 
   const remove = async (id: string, title: string) => {
-    if (!window.confirm(`Delete “${title}”? This cannot be undone.`)) return;
+    if (!window.confirm(`Excluir “${title}”? Esta ação não pode ser desfeita.`)) return;
     setBusyId(id);
     try {
       await commands.deleteProject(id);
@@ -161,7 +161,7 @@ export function RecordingsLibrary({ currentProjectId, onOpenProject }: Recording
   return (
     <div className="flex min-h-full flex-col bg-background text-foreground">
       <header className="mx-auto w-full max-w-6xl shrink-0 px-8 pb-2 pt-10">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Recordings</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Minhas gravações</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Your videos stay on this device. Click a recording to open the editor.
         </p>
@@ -219,7 +219,7 @@ export function RecordingsLibrary({ currentProjectId, onOpenProject }: Recording
 
         {projects.length === 0 ? (
           <p className="py-20 text-center text-sm text-muted-foreground">
-            No recordings yet. Capture from the menubar tray, then come back here.
+            Nenhuma gravação ainda. Clique em “Nova gravação” na parte superior para começar.
           </p>
         ) : filteredProjects.length === 0 ? (
           <p className="py-20 text-center text-sm text-muted-foreground">
@@ -271,7 +271,7 @@ export function RecordingsLibrary({ currentProjectId, onOpenProject }: Recording
                             size="icon"
                             className="size-8 shrink-0 text-muted-foreground"
                             disabled={busy}
-                            aria-label={`Actions for ${title}`}
+                            aria-label={`Ações de ${title}`}
                           >
                             <MoreHorizontal className="size-4" />
                           </Button>
